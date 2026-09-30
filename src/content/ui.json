@@ -1,0 +1,71 @@
+{
+  "boot": {
+    "loading": "Loading... (do not forward this loading screen)"
+  },
+  "contentNotice": {
+    "heading": "Pehle yeh padh lo",
+    "body": [
+      "This game contains horror themes, loud sudden sounds,",
+      "sudden zoom effects and flashing lights.",
+      "It is also a comedy. It does not know which one it is."
+    ],
+    "privacy": "Mic and camera are OFF. If the game ever asks, 'No' is always a fine answer.\nNothing is ever recorded or uploaded.",
+    "storageWarning": "Your browser is blocking saves. Progress will be forgotten when you close this tab.",
+    "continue": "Samajh gaya, aage chalo",
+    "hint": "Arrow keys / W S to move, Enter / Space to toggle. Mouse works too."
+  },
+  "settings": {
+    "heading": "Settings",
+    "reduceFlashing": "Reduce flashing (flashes become fades)",
+    "reduceJumpscares": "Reduce jump scares (keeps the dread, caps the stings)",
+    "subtitles": "Subtitles: always on (some scenes only speak in text)",
+    "muteHeading": "Mute sound categories:",
+    "back": "Back",
+    "on": "ON",
+    "off": "OFF",
+    "muted": "MUTED",
+    "audible": "on",
+    "sfxCategories": {
+      "stings": "Dramatic stings & zooms",
+      "phone": "Phones & ringtones",
+      "voices": "Voices & whispers",
+      "audience": "Audience laughter",
+      "ambience": "Kitchen & street ambience",
+      "ui": "Menu clicks"
+    }
+  },
+  "title": {
+    "name": "SKIP TUTORIAL",
+    "subtitle": "Desi Death Chodu CID Edition",
+    "start": "Start Tutorial (recommended)",
+    "continue": "Continue Tutorial (recommended)",
+    "settings": "Settings",
+    "caseFiles": "Case Files",
+    "caseFilesEmpty": "Case Files (koi case nahi hai. Abhi.)",
+    "contentNotice": "Content notice",
+    "footer": "Tutorial completion rate: 100%. Please maintain."
+  },
+  "pause": {
+    "heading": "PAUSED",
+    "resume": "Resume",
+    "settings": "Settings",
+    "quit": "Quit to Title",
+    "hint": "Esc / P to resume"
+  },
+  "placeholder": {
+    "heading": "Yeh level abhi bana nahi hai.",
+    "body": "Pintu is still building it. He apologised to the wall.",
+    "back": "Back to Title"
+  },
+  "tutorialStub": {
+    "heading": "TUTORIAL",
+    "pintu": "Pintu Bhaiya",
+    "lines": [
+      "Arre! Aa gaye aap. Welcome. Sorry. Welcome.",
+      "Tutorial M2 mein aayega. Tab tak... aaram se khade raho.",
+      "Esc dabao to pause hota hai. Maine check kiya hai. Do baar."
+    ],
+    "next": "Door: Level 1 ->",
+    "hint": "Enter: next line   Right arrow: door   Esc / P: pause"
+  }
+}
