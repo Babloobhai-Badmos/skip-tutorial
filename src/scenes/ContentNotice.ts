@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { unlockAudio } from '../audio/engine';
 import ui from '../content/ui.json';
 import { getStore } from '../core/gameState';
 import { Menu } from '../ui/menu';
@@ -49,8 +50,7 @@ export class ContentNotice extends Phaser.Scene {
       d.flags.seenContentNotice = true;
     });
     // Browsers keep audio locked until a user gesture: this click is it.
-    const ctx = (this.sound as Partial<Phaser.Sound.WebAudioSoundManager>).context;
-    void ctx?.resume?.().catch(() => undefined);
+    unlockAudio();
     goTo(this, 'Title');
   }
 }

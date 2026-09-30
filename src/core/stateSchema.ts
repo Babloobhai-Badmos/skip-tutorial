@@ -5,7 +5,7 @@ import { hashString } from './rng';
  * The persisted save shape (spec section 4). Bump SCHEMA_VERSION and add a
  * step in saveMigration.ts whenever this changes shape.
  */
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 export const MAX_DEATH_LOG = 1000;
 
 export type { Settings };
@@ -55,6 +55,18 @@ export interface Flags {
   leftRoomCount: number;
   doorsKicked: number;
   seenContentNotice: boolean;
+  /** How many times [SKIP] was pressed. */
+  skipCount: number;
+}
+
+export const TUTORIAL_STATIONS = ['walk', 'jump', 'lookLeft', 'wall'] as const;
+export type TutorialStation = (typeof TUTORIAL_STATIONS)[number];
+
+export interface TutorialProgress {
+  stationsDone: TutorialStation[];
+  certificateEarned: boolean;
+  /** Confident-walking progress, so leaving the room doesn't wipe it. */
+  walkProgressMs: number;
 }
 
 export interface GameState {
@@ -74,6 +86,7 @@ export interface GameState {
   caseFiles: CaseFile[];
   confessions: Confession[];
   flags: Flags;
+  tutorial: TutorialProgress;
   settings: Settings;
   /** Managed ONLY by HorrorDirector (enforced by lint + runtime check). */
   horrorLevel: HorrorLevel;
@@ -90,7 +103,12 @@ export function defaultFlags(): Flags {
     leftRoomCount: 0,
     doorsKicked: 0,
     seenContentNotice: false,
+    skipCount: 0,
   };
+}
+
+export function defaultTutorial(): TutorialProgress {
+  return { stationsDone: [], certificateEarned: false, walkProgressMs: 0 };
 }
 
 export function createDefaultState(now: number): GameState {
@@ -108,6 +126,7 @@ export function createDefaultState(now: number): GameState {
     caseFiles: [],
     confessions: [],
     flags: defaultFlags(),
+    tutorial: defaultTutorial(),
     settings: defaultSettings(),
     horrorLevel: 0,
   };

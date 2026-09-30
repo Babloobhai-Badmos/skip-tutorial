@@ -17,19 +17,30 @@ npm run build      # typecheck + production build into dist/
 - `src/core` — `gameState` (versioned, persisted store), `saveMigration`, `events` (typed bus),
   `sceneFlow` (allowed scene transitions), `rng` (seeded), `horrorDirector` (only writer of `horrorLevel`).
 - `src/settings/accessibility.ts` — safety settings (flash→fade, jump-scare cap, SFX mute categories).
+- `src/characters` — Pintu: dialogue engine (`pintu.ts`), body (`pintuView.ts`), glue (`pintuActor.ts`).
+- `src/core/pintuLoss.ts` — what Pintu loses, in order; the tutorial room quietly gives voice lines back.
+- `src/tutorial` — Confident Walking timer, safe-room timer (pure logic).
+- `src/audio` — Web Audio engine, mixer (channels + category/voice mutes), synthesized sfx presets.
 - `src/scenes` — Phaser scenes. Gameplay scenes extend `GameplayScene` so pause is always available.
 - `src/ui` — menu (keyboard + mouse), theme, effects.
 - `src/content/*.json` — every player-facing string.
 
+## Controls
+
+←/→ or A/D walk · ↑/W/Space jump · E/Enter open door · K skip · Esc/P pause.
+Menus work with arrows + Enter or the mouse.
+
 ## Dev helpers
 
-In dev builds the console exposes `__game` (Phaser game) and `__store` (the GameStore).
-Reset progress with `__store.reset()` (keeps safety settings) or `localStorage.clear()`.
+- `?fast=1` (dev only) runs the tutorial timers at 20x: Confident Walking takes 9s, the
+  tutorial-room reward 3s.
+- The console exposes `__game`, `__store`, `__sfx(name)` and `__audio()`.
+- Reset progress with `__store.reset()` (keeps safety settings) or `localStorage.clear()`.
 
 ## Milestones
 
 - [x] M1 — Skeleton: boot, content notice, title, settings, pause, GameState, event bus, scene flow.
-- [ ] M2 — Tutorial comedy
+- [x] M2 — Tutorial comedy: Pintu dialogue + loss system, stations, certificate, tips, [SKIP], sfx
 - [ ] M3 — Death system + HorrorDirector
 - [ ] M4 — CID engine
 - [ ] M5 — Levels

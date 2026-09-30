@@ -2,6 +2,8 @@ import { normalizeSettings } from '../settings/accessibility';
 import {
   createDefaultState,
   defaultFlags,
+  defaultTutorial,
+  TUTORIAL_STATIONS,
   PINTU_LOSS_ITEMS,
   SCHEMA_VERSION,
   type CaseFile,
@@ -11,6 +13,8 @@ import {
   type GameState,
   type HorrorLevel,
   type PintuLossEntry,
+  type TutorialProgress,
+  type TutorialStation,
 } from './stateSchema';
 
 type Raw = Record<string, unknown>;
@@ -18,7 +22,7 @@ type Raw = Record<string, unknown>;
 /**
  * One step per schema bump: MIGRATIONS[n] turns a v(n) save into v(n+1).
  * v0 = the pre-versioned prototype save ({ deaths, settings, ... }).
- * To add v2: bump SCHEMA_VERSION and add MIGRATIONS[1].
+ * To add v3: bump SCHEMA_VERSION and add MIGRATIONS[2].
  */
 const MIGRATIONS: Record<number, (raw: Raw) => Raw> = {
   0: (raw) => {
@@ -29,6 +33,16 @@ const MIGRATIONS: Record<number, (raw: Raw) => Raw> = {
       schemaVersion: 1,
     };
   },
+  // v2 (M2): tutorial progress + skip counter. Old saves start with a fresh tutorial.
+  1: (raw) => ({
+    ...raw,
+    tutorial: { stationsDone: [], certificateEarned: false, walkProgressMs: 0 },
+    flags: {
+      ...(typeof raw.flags === 'object' && raw.flags !== null ? raw.flags : {}),
+      skipCount: 0,
+    },
+    schemaVersion: 2,
+  }),
 };
 
 export type MigrationResult =
@@ -71,8 +85,25 @@ function normalizeFlags(v: unknown): Flags {
     aurDikhaoClicks: count(r.aurDikhaoClicks),
     leftRoomCount: count(r.leftRoomCount),
     doorsKicked: count(r.doorsKicked),
+    skipCount: count(r.skipCount),
     seenContentNotice:
       typeof r.seenContentNotice === 'boolean' ? r.seenContentNotice : d.seenContentNotice,
+  };
+}
+
+function normalizeTutorial(v: unknown): TutorialProgress {
+  const d = defaultTutorial();
+  const r = (typeof v === 'object' && v !== null ? v : {}) as Raw;
+  const stations = Array.isArray(r.stationsDone)
+    ? r.stationsDone.filter((x): x is TutorialStation =>
+        (TUTORIAL_STATIONS as readonly unknown[]).includes(x),
+      )
+    : d.stationsDone;
+  return {
+    stationsDone: [...new Set(stations)],
+    certificateEarned:
+      typeof r.certificateEarned === 'boolean' ? r.certificateEarned : d.certificateEarned,
+    walkProgressMs: num(r.walkProgressMs, 0, 0),
   };
 }
 
@@ -126,6 +157,7 @@ export function normalizeState(raw: Raw, now: number): GameState {
     caseFiles,
     confessions,
     flags: normalizeFlags(raw.flags),
+    tutorial: normalizeTutorial(raw.tutorial),
     settings: normalizeSettings(raw.settings),
     horrorLevel: Math.round(num(raw.horrorLevel, 0, 0, 5)) as HorrorLevel,
   };

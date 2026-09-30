@@ -22,10 +22,14 @@ export class Placeholder extends GameplayScene {
     this.add.text(cx, 220, this.intended, TEXT.mono).setOrigin(0.5);
     this.add.text(cx, 290, ui.placeholder.heading, TEXT.heading).setOrigin(0.5);
     this.add.text(cx, 350, ui.placeholder.body, TEXT.body).setOrigin(0.5);
-    new Menu(this, [{ label: () => ui.placeholder.back, onSelect: () => goTo(this, 'Title') }], {
-      x: cx,
-      y: 460,
-    }).refresh();
+    new Menu(
+      this,
+      [
+        { label: () => ui.placeholder.tutorial, onSelect: () => goTo(this, 'TutorialScene') },
+        { label: () => ui.placeholder.back, onSelect: () => goTo(this, 'Title') },
+      ],
+      { x: cx, y: 460, spacing: 52 },
+    ).refresh();
     this.setupPause();
   }
 }

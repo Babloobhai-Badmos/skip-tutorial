@@ -55,17 +55,45 @@
   "placeholder": {
     "heading": "Yeh level abhi bana nahi hai.",
     "body": "Pintu is still building it. He apologised to the wall.",
-    "back": "Back to Title"
+    "back": "Back to Title",
+    "tutorial": "Wapas Tutorial"
   },
-  "tutorialStub": {
-    "heading": "TUTORIAL",
-    "pintu": "Pintu Bhaiya",
-    "lines": [
-      "Arre! Aa gaye aap. Welcome. Sorry. Welcome.",
-      "Tutorial M2 mein aayega. Tab tak... aaram se khade raho.",
-      "Esc dabao to pause hota hai. Maine check kiya hai. Do baar."
+  "loading": {
+    "text": "Loading... (forward karte raho)"
+  },
+  "certificate": {
+    "title": "PARTICIPATION CERTIFICATE",
+    "body": [
+      "This is to certify that",
+      "AAP",
+      "have successfully participated in",
+      "CONFIDENT WALKING (3:00)"
     ],
-    "next": "Door: Level 1 ->",
-    "hint": "Enter: next line   Right arrow: door   Esc / P: pause"
+    "result": "Result: Participated",
+    "seal": "LAMI-\nNATED",
+    "signatureLabel": "Guide",
+    "close": "Enter / click: sambhal ke rakh lo"
+  },
+  "tutorial": {
+    "panelHeading": "TUTORIAL",
+    "stations": {
+      "walk": "1. Confident Walking",
+      "jump": "2. Jumping",
+      "lookLeft": "3. Looking Left",
+      "wall": "4. What is a Wall"
+    },
+    "plaques": {
+      "walk": "CONFIDENT WALKING\n(treadmill. walk right.)",
+      "jump": "JUMPING\n(yahan kudo)",
+      "lookLeft": "LOOKING LEFT\n(advanced)",
+      "wall": "WHAT IS A WALL"
+    },
+    "wallPoster": "Tutorial Room\nPlease wipe feet.",
+    "door": "LEVEL 1 →",
+    "doorPrompt": "E / Enter: darwaza kholo",
+    "skip": "[SKIP ▶▶]",
+    "hint": "←/→ chalo   ↑/Space kudo   E darwaza   K skip   Esc pause",
+    "silence": "...",
+    "you": "AAP"
   }
 }

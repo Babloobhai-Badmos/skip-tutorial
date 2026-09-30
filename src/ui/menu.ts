@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { sfx } from '../audio/engine';
 import { COLORS, TEXT } from './theme';
 
 export interface MenuItem {
@@ -110,6 +111,7 @@ export class Menu {
   }
 
   private move(dir: 1 | -1): void {
+    if (this.focus >= 0) sfx('typing_tick', { volume: 0.6 });
     const n = this.items.length;
     for (let step = 1; step <= n; step++) {
       const i = (((this.focus + dir * step) % n) + n) % n;
@@ -124,6 +126,7 @@ export class Menu {
   private activate(i: number): void {
     if (!this.isSelectable(i)) return;
     this.focus = i;
+    sfx('typing_tick');
     this.items[i]?.onSelect?.();
     // The action may have stopped the scene; only refresh if we're still alive.
     if (this.scene.sys.isActive()) this.refresh();

@@ -174,6 +174,22 @@ describe('migrateSave', () => {
     expect(result.state.percentage).toBe(100);
   });
 
+  it('migrates a v1 save to v2 without losing progress', () => {
+    const v1 = { schemaVersion: 1, deathCount: 9, flags: { calledPintuCount: 4 } };
+    const result = migrateSave(v1, T0);
+    expect(result.kind).toBe('ok');
+    if (result.kind !== 'ok') return;
+    expect(result.state.schemaVersion).toBe(2);
+    expect(result.state.deathCount).toBe(9);
+    expect(result.state.flags.calledPintuCount).toBe(4);
+    expect(result.state.flags.skipCount).toBe(0);
+    expect(result.state.tutorial).toEqual({
+      stationsDone: [],
+      certificateEarned: false,
+      walkProgressMs: 0,
+    });
+  });
+
   it('marks a current save as not migrated and round-trips it', () => {
     const state = createDefaultState(T0);
     const result = migrateSave(JSON.parse(JSON.stringify(state)), T0);
@@ -183,7 +199,7 @@ describe('migrateSave', () => {
   it('clamps and cleans hand-edited garbage', () => {
     const result = migrateSave(
       {
-        schemaVersion: 1,
+        schemaVersion: SCHEMA_VERSION,
         percentage: 900,
         horrorLevel: 42,
         deathCount: -3,

@@ -1,5 +1,6 @@
 import type { SceneKey } from './sceneFlow';
 import type { Settings } from '../settings/accessibility';
+import type { SfxName } from '../audio/sfx';
 
 /**
  * Every event the game can emit, with its payload type.
@@ -12,6 +13,8 @@ export interface EventMap {
   'scene:enter': { key: SceneKey };
   'pause:opened': undefined;
   'pause:closed': undefined;
+  /** A captioned sound played (or would have, if muted/unavailable). */
+  'sfx:played': { name: SfxName };
 }
 
 export type EventName = keyof EventMap;

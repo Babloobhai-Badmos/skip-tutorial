@@ -9,6 +9,7 @@ export const SCENE_KEYS = [
   'Title',
   'Settings',
   'Pause',
+  'Loading',
   'Placeholder',
   'TutorialScene',
   'Level1Hall',
@@ -44,7 +45,9 @@ export const TRANSITIONS: Readonly<Record<SceneKey, readonly SceneKey[]>> = {
   Title: ['TutorialScene', 'Settings', 'ContentNotice'],
   Settings: ['Title'],
   Pause: [],
-  Placeholder: ['Title'],
+  // Loading is the tip screen between gameplay scenes; it starts its target directly.
+  Loading: [],
+  Placeholder: ['TutorialScene', 'Title'],
   TutorialScene: ['Level1Hall', 'Title'],
   Level1Hall: ['Level2Kitchen', 'TutorialScene', 'Title'],
   Level2Kitchen: ['Level3Wedding', 'TutorialScene', 'Title'],
@@ -61,6 +64,7 @@ export const IMPLEMENTED_SCENES: ReadonlySet<SceneKey> = new Set<SceneKey>([
   'Title',
   'Settings',
   'Pause',
+  'Loading',
   'Placeholder',
   'TutorialScene',
 ]);

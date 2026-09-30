@@ -1,0 +1,315 @@
+{
+  "speaker": "Pintu Bhaiya",
+  "lines": [
+    {
+      "id": "greet_hello",
+      "context": "greet",
+      "mood": "anxious",
+      "text": "Arre! Aa gaye aap. Welcome. Sorry. Welcome.",
+      "losable": true
+    },
+    {
+      "id": "greet_intro",
+      "context": "greet",
+      "mood": "anxious",
+      "text": "Main Pintu. Main aapka guide hoon. Maine iske liye 11 din padhai ki hai."
+    },
+    {
+      "id": "greet_proud",
+      "context": "greet",
+      "mood": "proud",
+      "text": "Yeh tutorial maine khud banaya hai. Deewar bhi. Deewar pe dhyaan dena."
+    },
+    {
+      "id": "greet_scared",
+      "context": "greet",
+      "mood": "scared",
+      "text": "Aap... wapas aa gaye. Achha kiya. Bahut achha kiya."
+    },
+    {
+      "id": "greet_scared_2",
+      "context": "greet",
+      "mood": "scared",
+      "text": "Yahan rehna. Yahan sab theek hai. Maine check kiya hai.",
+      "minLoss": 2
+    },
+    {
+      "id": "return_hello",
+      "context": "return",
+      "mood": "anxious",
+      "text": "Aap bahar gaye the? Bina bataye? Theek hai. Theek hai. Theek hai."
+    },
+    {
+      "id": "return_proud",
+      "context": "return",
+      "mood": "proud",
+      "text": "Wapas aa gaye! Sab log wapas aate hain. Tutorial sabse achha room hai."
+    },
+    {
+      "id": "return_scared",
+      "context": "return",
+      "mood": "scared",
+      "text": "Darwaza band kar do. Please. Main sorry bol dunga usse."
+    },
+    {
+      "id": "return_scared_2",
+      "context": "return",
+      "mood": "scared",
+      "text": "Aap aa gaye. Main gin raha tha. Kya gin raha tha, yaad nahi."
+    },
+    {
+      "id": "return_scared_3",
+      "context": "return",
+      "mood": "scared",
+      "text": "Baitho. Matlab khade raho. Bas yahin raho. Bahar kuch nahi hai."
+    },
+    {
+      "id": "walk_start",
+      "context": "walk_start",
+      "mood": "proud",
+      "text": "Confident Walking. Teen minute. Seedha dekho. Chalte raho. Mat ruko."
+    },
+    {
+      "id": "walk_start_2",
+      "context": "walk_start",
+      "mood": "anxious",
+      "text": "Machine pe chadh gaye? Right dabao. Confidence se. Log dekh rahe hain."
+    },
+    {
+      "id": "walk_start_scared",
+      "context": "walk_start",
+      "mood": "scared",
+      "text": "Chalte raho. Jab tak chal rahe ho, tab tak... chalte raho."
+    },
+    {
+      "id": "walk_praise",
+      "context": "walk_progress",
+      "mood": "proud",
+      "text": "Wah! Kya chaal hai! Sharma-ji ka beta bhi itna confident nahi chalta.",
+      "losable": true
+    },
+    {
+      "id": "walk_progress_2",
+      "context": "walk_progress",
+      "mood": "proud",
+      "text": "Aadha raasta! Mummy ko bataunga. Unko kisi ko bataunga."
+    },
+    {
+      "id": "walk_progress_3",
+      "context": "walk_progress",
+      "mood": "anxious",
+      "text": "Aap bahut achha chal rahe ho. Main note kar raha hoon. Main sab note karta hoon."
+    },
+    {
+      "id": "walk_progress_scared",
+      "context": "walk_progress",
+      "mood": "scared",
+      "text": "Ruko mat. Pichhli baar koi ruka tha."
+    },
+    {
+      "id": "walk_stop",
+      "context": "walk_stop",
+      "mood": "anxious",
+      "text": "Ruk gaye?! Confidence mein break nahi hota! Das second kaat raha hoon. Sorry."
+    },
+    {
+      "id": "walk_stop_2",
+      "context": "walk_stop",
+      "mood": "apologetic",
+      "text": "Koi baat nahi. Sabse galti hoti hai. Mujhse bhi. Bahut baar."
+    },
+    {
+      "id": "walk_stop_scared",
+      "context": "walk_stop",
+      "mood": "scared",
+      "text": "Nahi nahi nahi. Chalo. Chalo please."
+    },
+    {
+      "id": "walk_done",
+      "context": "walk_done",
+      "mood": "proud",
+      "text": "Teen minute! Aapne kar dikhaya! Certificate! Laminated hai!"
+    },
+    {
+      "id": "walk_done_scared",
+      "context": "walk_done",
+      "mood": "scared",
+      "text": "Ho gaya. Certificate le lo. Isko sambhal ke rakhna. Yeh sabut hai."
+    },
+    {
+      "id": "jump_speed",
+      "context": "jump",
+      "mood": "anxious",
+      "text": "Itni speed se kaun kood-ta hai bhai?!",
+      "losable": true
+    },
+    {
+      "id": "jump_2",
+      "context": "jump",
+      "mood": "anxious",
+      "text": "Aaram se! Chhat ke upar Sharma uncle rehte hain."
+    },
+    {
+      "id": "jump_3",
+      "context": "jump",
+      "mood": "proud",
+      "text": "Jump! Theek tha. Thoda kam upar jaate toh aur theek hota."
+    },
+    {
+      "id": "jump_scared",
+      "context": "jump",
+      "mood": "scared",
+      "text": "Zameen pe raho. Zameen pe sab dikhta hai."
+    },
+    {
+      "id": "look_left",
+      "context": "look_left",
+      "mood": "proud",
+      "text": "Aapne left dekha! Bina kisi ki help ke! Main ro raha hoon. Khushi se."
+    },
+    {
+      "id": "look_left_2",
+      "context": "look_left",
+      "mood": "anxious",
+      "text": "Left mein kuch nahi hai. Maine check kiya. Dobara mat dekhna. Ya dekhna. Aapki marzi."
+    },
+    {
+      "id": "look_left_scared",
+      "context": "look_left",
+      "mood": "scared",
+      "text": "Left mat dekho. Please. Wahan se hi aaye the aap."
+    },
+    {
+      "id": "wall_sorry",
+      "context": "wall",
+      "mood": "apologetic",
+      "text": "Yeh deewar hai. Deewar ji, sorry. Yeh naye hain. Inko nahi pata.",
+      "losable": true
+    },
+    {
+      "id": "wall_2",
+      "context": "wall",
+      "mood": "apologetic",
+      "text": "Deewar se takraana bhi ek kala hai. Deewar ji, maafi. Dobara nahi hoga."
+    },
+    {
+      "id": "wall_3",
+      "context": "wall",
+      "mood": "proud",
+      "text": "What is a wall? Aapne seekh liya. Main deewar se maafi maang chuka hoon."
+    },
+    {
+      "id": "wall_scared",
+      "context": "wall",
+      "mood": "scared",
+      "text": "Deewar ko mat chhuo. Deewar sab yaad rakhti hai."
+    },
+    {
+      "id": "door_near",
+      "context": "door_near",
+      "mood": "anxious",
+      "text": "Woh darwaza... Level 1 hai. Jaana hai? Jao. Matlab mat jao. Matlab jao. Sorry."
+    },
+    {
+      "id": "door_near_2",
+      "context": "door_near",
+      "mood": "apologetic",
+      "text": "Darwaze ko sorry bol ke jaana. Main har baar bolta hoon.",
+      "losable": true
+    },
+    {
+      "id": "door_near_scared",
+      "context": "door_near",
+      "mood": "scared",
+      "text": "Wahan mat jao. Tutorial mein raho. Tutorial safe hai."
+    },
+    {
+      "id": "skip_1",
+      "context": "skip",
+      "mood": "anxious",
+      "text": "Skip?! Par... certificate... theek hai. Sab skip karte hain. Theek hai."
+    },
+    {
+      "id": "skip_2",
+      "context": "skip",
+      "mood": "scared",
+      "text": "Phir se? Accha. Main... yahin hoon. Jitna bacha hoon."
+    },
+    {
+      "id": "skip_3",
+      "context": "skip",
+      "mood": "scared",
+      "text": "Haan. Jao.",
+      "minLoss": 4
+    },
+    {
+      "id": "idle_1",
+      "context": "idle",
+      "mood": "anxious",
+      "text": "Main aapko dekh nahi raha. Bas... dekh raha hoon. Guide ka kaam hai."
+    },
+    {
+      "id": "idle_2",
+      "context": "idle",
+      "mood": "anxious",
+      "text": "Aapne khaana khaya? Tutorial khaali pet nahi karte."
+    },
+    {
+      "id": "idle_3",
+      "context": "idle",
+      "mood": "proud",
+      "text": "Mere Tutorial Studies mein 94 aaye the. Papa ne poocha baaki 6 kahan gaye."
+    },
+    {
+      "id": "idle_4",
+      "context": "idle",
+      "mood": "apologetic",
+      "text": "Sorry. Kuch nahi. Bas bol diya. Kabhi kabhi bolna padta hai.",
+      "losable": true
+    },
+    {
+      "id": "idle_5",
+      "context": "idle",
+      "mood": "anxious",
+      "text": "Loading screen pe jo tips aate hain, woh maine nahi likhe. Pata nahi kaun likhta hai."
+    },
+    {
+      "id": "idle_scared",
+      "context": "idle",
+      "mood": "scared",
+      "text": "Aap yahan ho toh achha lagta hai. Aap yahan ho na?"
+    },
+    {
+      "id": "idle_scared_2",
+      "context": "idle",
+      "mood": "scared",
+      "text": "Main theek hoon. Mera naam... main theek hoon.",
+      "minLoss": 1
+    },
+    {
+      "id": "idle_scared_3",
+      "context": "idle",
+      "mood": "scared",
+      "text": "Pair nahi hain toh kya. Guide khada rehta hai. Kaise bhi.",
+      "minLoss": 6
+    },
+    {
+      "id": "certificate",
+      "context": "certificate",
+      "mood": "proud",
+      "text": "Participation Certificate. Aapne participate kiya. Yeh bahut badi baat hai. Mere paas bhi hai."
+    },
+    {
+      "id": "all_done",
+      "context": "all_done",
+      "mood": "proud",
+      "text": "Tutorial complete! Aap ab jaa sakte ho. Agar jaana hai toh. Koi zabardasti nahi hai."
+    },
+    {
+      "id": "all_done_scared",
+      "context": "all_done",
+      "mood": "scared",
+      "text": "Sab seekh liya. Ab... ab rukna bhi seekh lo."
+    }
+  ]
+}

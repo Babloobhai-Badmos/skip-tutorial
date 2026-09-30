@@ -1,7 +1,9 @@
 import Phaser from 'phaser';
+import { getAudio, sfx } from './audio/engine';
 import { getStore } from './core/gameState';
 import { Boot } from './scenes/Boot';
 import { ContentNotice } from './scenes/ContentNotice';
+import { Loading } from './scenes/Loading';
 import { Pause } from './scenes/Pause';
 import { Placeholder } from './scenes/Placeholder';
 import { Settings } from './scenes/Settings';
@@ -18,7 +20,7 @@ const game = new Phaser.Game({
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   physics: { default: 'arcade', arcade: { gravity: { x: 0, y: 1200 }, debug: false } },
   // Overlays (Pause, Settings) are listed last so they render on top.
-  scene: [Boot, ContentNotice, Title, TutorialScene, Placeholder, Settings, Pause],
+  scene: [Boot, ContentNotice, Title, Loading, TutorialScene, Placeholder, Settings, Pause],
 });
 
 // Play-time feeds the HorrorDirector later. Phaser stops stepping when the tab is hidden.
@@ -34,5 +36,5 @@ document.addEventListener('visibilitychange', () => {
 
 if (import.meta.env.DEV) {
   // Handy in the console while testing milestones.
-  Object.assign(window, { __game: game, __store: getStore() });
+  Object.assign(window, { __game: game, __store: getStore(), __sfx: sfx, __audio: getAudio });
 }
