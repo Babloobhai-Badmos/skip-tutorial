@@ -24,13 +24,17 @@ npm run build      # typecheck + production build into dist/
 - `src/core/horrorDirector.ts` — the tone brain (levels 0–5); the only writer of `horrorLevel`.
 - `src/core/deaths.ts` + `src/deathScenes` — death logging/routing and the `DeathScene` modules
   (laugh phase always, break phase when the HorrorDirector allows it).
-- `src/scenes` — Phaser scenes. `Death` is an overlay on top of a paused level. Gameplay scenes extend `GameplayScene` so pause is always available.
+- `src/cid` — the Chodu CID engine: `logicModule` (comedy) / `truthModule` (horror, level 3+)
+  write investigations in the same format; `investigation.ts` stages them; case files; Gadbad counter.
+- `src/scenes` — Phaser scenes. `Death` is an overlay on top of a paused level: laugh → CID
+  investigation → break. Gameplay scenes extend `GameplayScene` so pause is always available.
 - `src/ui` — menu (keyboard + mouse), theme, effects.
 - `src/content/*.json` — every player-facing string.
 
 ## Controls
 
-←/→ or A/D walk · ↑/W/Space jump · E/Enter open door · K skip · Esc/P pause.
+←/→ or A/D walk · ↑/W/Space jump · E/Enter open door · F call Daya at a locked door ·
+K skip (tutorial) · Esc/P pause. During an investigation, Enter advances.
 Menus work with arrows + Enter or the mouse.
 
 ## Dev helpers
@@ -46,7 +50,7 @@ Menus work with arrows + Enter or the mouse.
 - [x] M1 — Skeleton: boot, content notice, title, settings, pause, GameState, event bus, scene flow.
 - [x] M2 — Tutorial comedy: Pintu dialogue + loss system, stations, certificate, tips, [SKIP], sfx
 - [x] M3 — Death system + HorrorDirector: D01, D02, D07 (laugh + break), hall prototype
-- [ ] M4 — CID engine
+- [x] M4 — CID engine: investigations (Logic/Truth), case files, Gadbad counter, Daya's kicks + tally, D08, D09, D10
 - [ ] M5 — Levels
 - [ ] M6 — Act 3
 - [ ] M7 — Endgame

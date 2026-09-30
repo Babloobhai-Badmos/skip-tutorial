@@ -60,6 +60,46 @@
     "doorPrompt": "E / Enter: darwaza",
     "cooker": "cooker",
     "bangles": "choodiyan (tooti)",
-    "hint": "←/→ chalo   ↑/Space kudo   E darwaza   Esc pause"
+    "hint": "←/→ chalo   ↑/Space kudo   E darwaza   F Daya   Esc pause",
+    "lockedPrompt": "F: Daya ko bulao",
+    "storeRoom": "STORE ROOM",
+    "almirah": "ALMIRAH",
+    "dayaWatch": "(Daya darwaze ko dekhta hai. Bahut der tak.)",
+    "almirahGag": "(1998 ke kapde. Sab abhi bhi fit aate hain.)",
+    "bartan": "(Store room: saare steel ke bartan. Ek saath.)"
+  },
+  "d08": {
+    "card": "DARWAZA\nTOD DO!",
+    "punch": "Daya ne darwaza toda. Darwaza ne aapko.",
+    "dayaLaugh": "Sir, darwaza tod diya.",
+    "dayaBreak": "Sir... yeh andar se band tha."
+  },
+  "d09": {
+    "things": [
+      "Farsh.",
+      "Aapke joote.",
+      "Yeh hawa.",
+      "Deewar ka rang.",
+      "Woh cooker. Phir se.",
+      "Aapki chaal."
+    ],
+    "suffix": " Kuch toh gadbad hai.",
+    "counter": "GADBAD: {n}",
+    "breakLine": "Gadbad yahin hai."
+  },
+  "d10": {
+    "title": "POSTMORTEM REPORT",
+    "fields": [
+      ["Naam", "Aap"],
+      ["Jagah", "x{x}"],
+      ["Ungli ka naap", "4 number"],
+      ["Maut ka kaaran", "Bahut zyada maut"],
+      ["Maut ka samay", "kal hui"],
+      ["Remarks", "Body theek-thaak hai. Bas zinda nahi."]
+    ],
+    "watch": "(Salunkhe apni ghadi dekhte hain. Ghadi nahi hai.)",
+    "drift": ["kal hui", "aaj hui", "abhi hui", "abhi hogi"],
+    "unsolved": "Case unsolved. Suspect is watching.",
+    "signed": "— Dr. Salunkhe"
   }
 }

@@ -17,6 +17,7 @@ import { GAME_WIDTH, TEXT } from '../ui/theme';
 import { GameplayScene } from './GameplayScene';
 import { goTo } from './navigate';
 import { buildSkipButton, TutorialChecklist } from './tutorial/hud';
+import { drawTally } from './tutorial/tally';
 import {
   buildRoom,
   DOOR,
@@ -29,6 +30,7 @@ import {
 
 const t = ui.tutorial;
 const EXTRA_LOSABLE = losableIds(PINTU_LINES);
+const TALLY_ON_DOOR_LEVEL = 3;
 
 type Keys = Record<'e' | 'enter' | 'k', Phaser.Input.Keyboard.Key>;
 
@@ -64,6 +66,7 @@ export class TutorialScene extends GameplayScene {
     this.pendingRecovered = null;
 
     this.room = buildRoom(this);
+    this.drawDayasTally();
     this.subtitles = new SubtitleBar(this);
     const view = new PintuView(this, PINTU_X, FLOOR_Y);
     const visit = store.state.flags.leftRoomCount + store.state.flags.skipCount;
@@ -173,6 +176,24 @@ export class TutorialScene extends GameplayScene {
     );
     this.updateChecklist();
     this.saveWalk(false);
+  }
+
+  /**
+   * Daya's Tally: every kicked door is a mark on the wall. Late game the marks
+   * are on the INSIDE of the door, and the count is your deaths.
+   */
+  private drawDayasTally(): void {
+    const state = getStore().state;
+    const g = this.add.graphics();
+    if (state.horrorLevel >= TALLY_ON_DOOR_LEVEL) {
+      drawTally(g, DOOR.x - 30, FLOOR_Y - DOOR.height + 14, state.deathCount, {
+        color: 0xe8e0d0,
+        perRow: 2,
+        h: 16,
+      });
+    } else {
+      drawTally(g, 1060, 280, state.flags.doorsKicked);
+    }
   }
 
   private updateChecklist(): void {

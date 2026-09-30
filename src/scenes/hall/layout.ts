@@ -1,4 +1,5 @@
 import type Phaser from 'phaser';
+import type cid from '../../content/cid.json';
 import content from '../../content/deaths.json';
 import { COLORS, GAME_HEIGHT, TEXT } from '../../ui/theme';
 
@@ -13,12 +14,42 @@ export const CHECKPOINT_X = 170;
 export const BACK_DOOR_X = 70;
 export const NEXT_DOOR_X = 2320;
 
+/** Locked doors Daya can kick. One of them should not be kicked. */
+export const LOCKED_DOORS = [
+  { key: 'storeRoom', x: 470, deadly: true },
+  { key: 'almirah', x: 1360, deadly: false },
+] as const;
+export type LockedDoorKey = (typeof LOCKED_DOORS)[number]['key'];
+
+/** Inanimate objects: the CID's suspects (label comes from cid.json). */
+export const HALL_OBJECTS: readonly { key: keyof typeof cid.objects; x: number }[] = [
+  { key: 'door', x: BACK_DOOR_X },
+  { key: 'storeRoom', x: 470 },
+  { key: 'pit', x: (PIT.from + PIT.to) / 2 },
+  { key: 'photo', x: 920 },
+  { key: 'cooker', x: COOKER.x },
+  { key: 'almirah', x: 1360 },
+  { key: 'bangles', x: (BANGLES.from + BANGLES.to) / 2 },
+  { key: 'photo', x: 1900 },
+  { key: 'door', x: NEXT_DOOR_X },
+];
+
+export interface LockedDoor {
+  key: LockedDoorKey;
+  x: number;
+  deadly: boolean;
+  panel: Phaser.GameObjects.Rectangle;
+  zone: Phaser.GameObjects.Zone;
+  open: boolean;
+}
+
 export interface HallLayout {
   solids: Phaser.Physics.Arcade.StaticGroup;
   cooker: Phaser.GameObjects.Container;
   backDoor: Phaser.GameObjects.Zone;
   nextDoor: Phaser.GameObjects.Zone;
   doorPrompt: Phaser.GameObjects.Text;
+  lockedDoors: LockedDoor[];
 }
 
 /** The Hall prototype: a corridor with a pit, a pressure cooker and broken bangles. */
@@ -90,5 +121,19 @@ export function buildHall(scene: Phaser.Scene): HallLayout {
     .setOrigin(0.5)
     .setVisible(false);
 
-  return { solids, cooker, backDoor, nextDoor, doorPrompt };
+  const lockedDoors: LockedDoor[] = LOCKED_DOORS.map((d) => {
+    const label = d.key === 'storeRoom' ? h.storeRoom : h.almirah;
+    scene.add.rectangle(d.x, FLOOR_Y - 65, 84, 138, 0x120c08); // what's behind
+    const panel = scene.add
+      .rectangle(d.x - 40, FLOOR_Y - 134, 80, 134, 0x5b3d24)
+      .setOrigin(0)
+      .setStrokeStyle(3, 0x3a2716);
+    scene.add.rectangle(d.x + 22, FLOOR_Y - 70, 12, 16, 0xb8a060); // padlock
+    scene.add.text(d.x, FLOOR_Y - 156, label, { ...TEXT.small, color: COLORS.dim }).setOrigin(0.5);
+    const zone = scene.add.zone(d.x, FLOOR_Y - 70, 110, 140);
+    scene.physics.add.existing(zone, true);
+    return { key: d.key, x: d.x, deadly: d.deadly, panel, zone, open: false };
+  });
+
+  return { solids, cooker, backDoor, nextDoor, doorPrompt, lockedDoors };
 }

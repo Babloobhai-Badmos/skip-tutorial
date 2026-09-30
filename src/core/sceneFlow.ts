@@ -8,6 +8,7 @@ export const SCENE_KEYS = [
   'ContentNotice',
   'Title',
   'Settings',
+  'CaseFiles',
   'Pause',
   'Loading',
   'Death',
@@ -44,8 +45,9 @@ export const GAMEPLAY_SCENES: ReadonlySet<SceneKey> = new Set<SceneKey>([
 export const TRANSITIONS: Readonly<Record<SceneKey, readonly SceneKey[]>> = {
   Boot: ['ContentNotice'],
   ContentNotice: ['Title'],
-  Title: ['TutorialScene', 'Settings', 'ContentNotice'],
+  Title: ['TutorialScene', 'Settings', 'CaseFiles', 'ContentNotice'],
   Settings: ['Title'],
+  CaseFiles: ['Title'],
   Pause: [],
   // Loading is the tip screen between gameplay scenes; it starts its target directly.
   Loading: [],
@@ -67,6 +69,7 @@ export const IMPLEMENTED_SCENES: ReadonlySet<SceneKey> = new Set<SceneKey>([
   'ContentNotice',
   'Title',
   'Settings',
+  'CaseFiles',
   'Pause',
   'Loading',
   'Death',

@@ -1,0 +1,96 @@
+{
+  "squad": {
+    "acp": {
+      "name": "ACP",
+      "catchphrase": "Kuch toh gadbad hai."
+    },
+    "daya": {
+      "name": "Daya",
+      "catchphrase": "Darwaza tod do?"
+    },
+    "salunkhe": {
+      "name": "Dr. Salunkhe",
+      "catchphrase": "Report aa gayi hai."
+    },
+    "freddy": {
+      "name": "Freddy Uncle",
+      "catchphrase": "Sir, main bataun?"
+    }
+  },
+  "logic": {
+    "opening": ["{acp}: Kuch toh gadbad hai.", "{acp}: Yahan... kuch toh gadbad hai."],
+    "salunkhe": [
+      "Maut ka kaaran... bahut zyada maut.",
+      "Ungli ka naap 4 number. Isse sab saaf ho jaata hai.",
+      "Maut hui hai. Main guarantee deta hoon. Maine ghadi dekhi. (ghadi nahi hai)",
+      "Body ka tapmaan: body jaisa."
+    ],
+    "freddy": [
+      "Sir, yeh billi ka kaam hai. Billiyan sab jaanti hain.",
+      "Sir, Wi-Fi. Wi-Fi ki waves. Maine padha tha.",
+      "Sir, meri biwi kehti hai sab cooker ki galti hoti hai.",
+      "Sir, yeh aatma hai. Ya WhatsApp. Ek hi baat hai."
+    ],
+    "accuse": "{acp}: Yeh {object} hi hai.",
+    "how": "{daya}: Kaise pata, sir?",
+    "because": [
+      "{acp}: Kyunki woh chup hai.",
+      "{acp}: Kyunki woh wahan tha. Aur hum yahan hain.",
+      "{acp}: Kyunki maine dekha. Is tarah se."
+    ],
+    "demand": "{acp}: {Object}... sach bol do.",
+    "confessions": [
+      "Haan. Maine kiya. Main gol tha, woh seedha tha.",
+      "Maine kiya. Mujhe laga koi dekh nahi raha.",
+      "Haan sir. Main... main {object} hoon. Yahi mera kasoor hai.",
+      "Maine kiya. Aur main phir karunga. Sorry."
+    ],
+    "caseNames": [
+      "The {Object} Conspiracy",
+      "{Object} Ka Rahasya",
+      "Operation {Object}",
+      "The Silent {Object}"
+    ],
+    "recap": "{Object} ne kiya. Kyunki woh chup tha."
+  },
+  "truth": {
+    "opening": ["{acp}: Kuch toh gadbad hai.", "{acp}: Yahan... kuch toh gadbad hai."],
+    "salunkhe": [
+      "Maut ka kaaran: x{x}. Yahan {spotDeaths} baar maut hui hai. Ek hi aadmi ki.",
+      "Maut ka samay: {minutes} minute se chal raha hai. Abhi bhi.",
+      "Ungli ka naap wahi hai jo {deathCount} maut pehle tha."
+    ],
+    "freddy": [
+      "Sir, cooker nahi hai. Yeh {deathCount} baar mar chuke hain. Phir bhi wapas aate hain.",
+      "Sir, billi nahi hai. Inhone Pintu ko {calledPintu} baar bulaya. Har baar kuch kam wapas aaya.",
+      "Sir, Wi-Fi nahi hai. Inhone {skips} baar skip dabaya. Pintu ne gina."
+    ],
+    "accuse": "{acp}: Yeh... aap hi ho.",
+    "how": "{daya}: Kaise pata, sir?",
+    "because": ["{acp}: Kyunki aap chup ho."],
+    "demand": "{acp}: {Object}... sach bol do.",
+    "confessions": [
+      "Haan. Main x{x} pe mara. {spotDeaths} baar. Mujhe wahan achha lagta hai.",
+      "Maine {doorsKicked} darwaze todwaye. Andar se band the.",
+      "Maine Pintu ko {calledPintu} baar bulaya. Main phir bulaunga."
+    ],
+    "caseNames": ["Wahi Jagah", "The Player at x{x}", "Case Jo Band Nahi Hota", "Aap Ka Rahasya"],
+    "recap": "Aap ne kiya. Kyunki aap chup the.",
+    "object": "aap",
+    "Object": "Aap"
+  },
+  "unasked": "Sach bol diya.",
+  "stamp": "CASE #{n}",
+  "skipHint": "Enter: aage",
+  "objects": {
+    "pit": "gaddha",
+    "cooker": "pressure cooker",
+    "bangles": "choodiyan",
+    "photo": "Sharma-ji ki photo",
+    "stool": "stool",
+    "door": "darwaza",
+    "storeRoom": "store room ka darwaza",
+    "almirah": "almirah",
+    "floor": "farsh"
+  }
+}

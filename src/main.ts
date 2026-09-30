@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { getAudio, sfx } from './audio/engine';
 import { getStore } from './core/gameState';
 import { Boot } from './scenes/Boot';
+import { CaseFiles } from './scenes/CaseFiles';
 import { ContentNotice } from './scenes/ContentNotice';
 import { Death } from './scenes/Death';
 import { Level1Hall } from './scenes/Level1Hall';
@@ -30,6 +31,7 @@ const game = new Phaser.Game({
     TutorialScene,
     Level1Hall,
     Placeholder,
+    CaseFiles,
     Death,
     Settings,
     Pause,

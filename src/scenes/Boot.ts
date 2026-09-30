@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import ui from '../content/ui.json';
+import { drawSquadTextures } from '../characters/squadArt';
 import { getStore } from '../core/gameState';
 import { updateHorrorLevel } from '../core/horrorDirector';
 import { goTo } from './navigate';
@@ -15,6 +16,7 @@ export class Boot extends Phaser.Scene {
     const store = getStore();
     updateHorrorLevel(store);
     this.makeTextures();
+    drawSquadTextures(this);
     goTo(this, 'ContentNotice');
   }
 

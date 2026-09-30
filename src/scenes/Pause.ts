@@ -3,6 +3,7 @@ import ui from '../content/ui.json';
 import { events } from '../core/events';
 import { canTransition, GAMEPLAY_SCENES, type SceneKey } from '../core/sceneFlow';
 import { Menu } from '../ui/menu';
+import { onThisVisit } from './sceneEvents';
 import { COLORS, GAME_HEIGHT, GAME_WIDTH, TEXT } from '../ui/theme';
 
 interface PauseData {
@@ -25,7 +26,7 @@ export class Pause extends Phaser.Scene {
   create(): void {
     // Game-loop clock, not the scene clock: the scene clock is stale after sleep/wake.
     this.openedAt = this.game.loop.time;
-    this.events.on(Phaser.Scenes.Events.WAKE, () => (this.openedAt = this.game.loop.time));
+    onThisVisit(this, Phaser.Scenes.Events.WAKE, () => (this.openedAt = this.game.loop.time));
     const cx = GAME_WIDTH / 2;
     this.add.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.75).setOrigin(0);
     this.add

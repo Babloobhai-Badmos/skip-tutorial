@@ -95,5 +95,12 @@
     "hint": "←/→ chalo   ↑/Space kudo   E darwaza   K skip   Esc pause",
     "silence": "...",
     "you": "AAP"
+  },
+  "caseFiles": {
+    "heading": "CASE FILES",
+    "empty": "Koi case nahi. Abhi.",
+    "back": "Back",
+    "more": "(+{n} purane cases)",
+    "hint": "Enter: recap sunao   Esc: back"
   }
 }

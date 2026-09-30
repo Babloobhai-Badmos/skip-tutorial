@@ -6,6 +6,8 @@ import { corpsesIn, recordDeath, type DeathInput } from '../core/deaths';
 import { events } from '../core/events';
 import { getStore } from '../core/gameState';
 import { updateHorrorLevel } from '../core/horrorDirector';
+import cid from '../content/cid.json';
+import { createGadbadHud } from '../ui/gadbadHud';
 import { flashOrFade } from '../ui/effects';
 import { SubtitleBar } from '../ui/subtitleBar';
 import { GAME_HEIGHT, GAME_WIDTH, TEXT } from '../ui/theme';
@@ -17,13 +19,16 @@ import {
   buildHall,
   CHECKPOINT_X,
   COOKER,
+  HALL_OBJECTS,
   FLOOR_Y,
   HALL_WIDTH,
   NEXT_DOOR_X,
   PIT,
   type HallLayout,
 } from './hall/layout';
+import { kickDoor } from './hall/kick';
 import { goTo } from './navigate';
+import { onThisVisit } from './sceneEvents';
 
 const KEY = 'Level1Hall';
 /** Cooker cycle: quiet, then a whistle you must not be standing in. */
@@ -45,6 +50,8 @@ export class Level1Hall extends GameplayScene {
   private cookerClock = 0;
   private whistling = false;
   private doorKeys!: Phaser.Input.Keyboard.Key[];
+  private kickKey!: Phaser.Input.Keyboard.Key;
+  private kicking = false;
 
   constructor() {
     super(KEY);
@@ -53,10 +60,14 @@ export class Level1Hall extends GameplayScene {
   create(): void {
     this.dying = false;
     this.leaving = false;
+    this.kicking = false;
     this.cookerClock = 0;
     this.whistling = false;
     this.lastSafe = { x: CHECKPOINT_X, y: FLOOR_Y - 40 };
 
+    // A quit during Daya's slow-mo must not leave the next visit in slow motion.
+    this.tweens.timeScale = 1;
+    this.physics.world.timeScale = 1;
     this.physics.world.setBounds(0, 0, HALL_WIDTH, GAME_HEIGHT + 300);
     this.physics.world.setBoundsCollision(true, true, true, false);
     this.hall = buildHall(this);
@@ -76,9 +87,11 @@ export class Level1Hall extends GameplayScene {
 
     const K = Phaser.Input.Keyboard.KeyCodes;
     this.doorKeys = [K.E, K.ENTER].map((k) => this.input.keyboard!.addKey(k));
+    this.kickKey = this.input.keyboard!.addKey(K.F);
+    createGadbadHud(this);
 
     // Coming back from a Death overlay.
-    this.events.on(Phaser.Scenes.Events.RESUME, (_sys: unknown, data: unknown) => {
+    onThisVisit(this, Phaser.Scenes.Events.RESUME, (_sys: unknown, data: unknown) => {
       if (isRespawn(data)) this.respawn(data.respawnAtDeathSpot);
     });
     this.setupPause();
@@ -87,7 +100,7 @@ export class Level1Hall extends GameplayScene {
   update(_t: number, dtMs: number): void {
     const dt = Math.min(dtMs, 100);
     this.updateCooker(dt);
-    if (this.dying || this.leaving) return;
+    if (this.dying || this.leaving || this.kicking) return;
 
     const frame = this.player.update();
     const { x, y } = this.player.sprite;
@@ -107,6 +120,27 @@ export class Level1Hall extends GameplayScene {
     if (frame.grounded && !nearHazard) this.lastSafe = { x, y };
 
     this.checkDoors();
+    this.checkLockedDoors();
+  }
+
+  private checkLockedDoors(): void {
+    const door = this.hall.lockedDoors.find(
+      (d) => !d.open && this.physics.overlap(this.player.sprite, d.zone),
+    );
+    if (door) this.hall.doorPrompt.setText(content.hall.lockedPrompt).setX(door.x).setVisible(true);
+    if (!door || !Phaser.Input.Keyboard.JustDown(this.kickKey)) return;
+    this.kicking = true;
+    this.player.enabled = false;
+    this.player.sprite.setVelocity(0, 0);
+    this.hall.doorPrompt.setVisible(false);
+    void kickDoor(this, door, this.subtitles, this.player.sprite.x).then((result) => {
+      this.kicking = false;
+      this.player.enabled = true;
+      if (result === 'deadly') {
+        const { x, y } = this.player.sprite;
+        this.die({ x, y, scene: KEY, cause: 'door' });
+      }
+    });
   }
 
   private updateCooker(dt: number): void {
@@ -150,7 +184,10 @@ export class Level1Hall extends GameplayScene {
     const atBack = this.physics.overlap(this.player.sprite, this.hall.backDoor);
     const atNext = this.physics.overlap(this.player.sprite, this.hall.nextDoor);
     const prompt = this.hall.doorPrompt;
-    prompt.setVisible(atBack || atNext).setX(atBack ? BACK_DOOR_X : NEXT_DOOR_X);
+    prompt
+      .setText(content.hall.doorPrompt)
+      .setVisible(atBack || atNext)
+      .setX(atBack ? BACK_DOOR_X : NEXT_DOOR_X);
     if (!(atBack || atNext) || !this.doorKeys.some((k) => Phaser.Input.Keyboard.JustDown(k)))
       return;
     this.leaving = true;
@@ -173,7 +210,11 @@ export class Level1Hall extends GameplayScene {
       // Order matters: scene ops are queued, and the level must already be
       // paused when the Death overlay's create() runs.
       this.scene.pause();
-      this.scene.launch('Death', { from: KEY, entryId: entry.id });
+      this.scene.launch('Death', {
+        from: KEY,
+        entryId: entry.id,
+        objects: HALL_OBJECTS.map((o) => ({ label: cid.objects[o.key], x: o.x })),
+      });
       this.scene.bringToTop('Death');
       this.scene.bringToTop('Pause');
     });

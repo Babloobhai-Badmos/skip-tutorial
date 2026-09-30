@@ -13,6 +13,7 @@ import { createMemoryStorage } from '../src/core/storage';
 import { chatScript } from '../src/deathScenes/d07_blueTicks';
 import { whistleSteps } from '../src/deathScenes/d02_rasode';
 import { DEATH_SCENES } from '../src/deathScenes';
+import { reportFields, timeDrift } from '../src/deathScenes/d10_postmortem';
 
 const makeStore = () =>
   new GameStore({ storage: createMemoryStorage(), now: () => 1, events: new EventBus() });
@@ -53,15 +54,33 @@ describe('pickDeathScene', () => {
     for (let seed = 0; seed < 20; seed++) {
       seen.add(pickDeathScene(DEATH_SCENES, state(3), 'bangles', createRng(seed)).id);
     }
-    expect(seen).toEqual(new Set(['d01_kyaSeKya', 'd07_blueTicks']));
+    expect(seen).toEqual(
+      new Set(['d01_kyaSeKya', 'd07_blueTicks', 'd09_gadbad', 'd10_postmortem']),
+    );
   });
 
   it('avoids an immediate repeat', () => {
     for (let seed = 0; seed < 20; seed++) {
       expect(
         pickDeathScene(DEATH_SCENES, state(3), 'bangles', createRng(seed), 'd07_blueTicks').id,
-      ).toBe('d01_kyaSeKya');
+      ).not.toBe('d07_blueTicks');
     }
+  });
+
+  it('unlocks general deaths gradually', () => {
+    const ids = (n: number) =>
+      new Set(
+        Array.from(
+          { length: 30 },
+          (_, seed) => pickDeathScene(DEATH_SCENES, state(n), 'bangles', createRng(seed)).id,
+        ),
+      );
+    expect(ids(1)).toEqual(new Set(['d01_kyaSeKya']));
+    expect(ids(2)).toEqual(new Set(['d01_kyaSeKya', 'd07_blueTicks', 'd10_postmortem']));
+  });
+
+  it('door deaths belong to Daya', () => {
+    expect(pickDeathScene(DEATH_SCENES, state(1), 'door', createRng(1)).id).toBe('d08_darwazaTodo');
   });
 
   it('is deterministic per seed', () => {
@@ -137,5 +156,20 @@ describe('D07 chat', () => {
   it('falls back to default tips for unknown causes', () => {
     const beats = chatScript({ ...death, cause: 'mystery' }, false, createRng(2));
     expect(beats[0]?.msg.text.length).toBeGreaterThan(0);
+  });
+});
+
+describe('D10 postmortem', () => {
+  const death = { id: 3, x: 1551, y: 612, scene: 'Level1Hall', cause: 'bangles', timestamp: 0 };
+  it('has precise nonsense, including the real spot', () => {
+    const f = Object.fromEntries(reportFields(death));
+    expect(f['Ungli ka naap']).toBe('4 number');
+    expect(f['Maut ka kaaran']).toBe('Bahut zyada maut');
+    expect(f['Jagah']).toBe('x1551');
+    expect(f['Maut ka samay']).toBe('kal hui');
+  });
+  it('time of death drifts from past to future', () => {
+    expect(timeDrift()).toEqual(['kal hui', 'aaj hui', 'abhi hui', 'abhi hogi']);
+    expect(timeDrift()[0]).toBe(Object.fromEntries(reportFields(death))['Maut ka samay']);
   });
 });

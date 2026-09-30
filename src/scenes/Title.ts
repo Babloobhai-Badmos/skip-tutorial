@@ -6,6 +6,7 @@ import { getStore } from '../core/gameState';
 import { Menu } from '../ui/menu';
 import { GAME_HEIGHT, GAME_WIDTH, TEXT, COLORS } from '../ui/theme';
 import { goTo } from './navigate';
+import { onThisVisit } from './sceneEvents';
 
 const t = ui.title;
 
@@ -25,8 +26,8 @@ export class Title extends Phaser.Scene {
     // Pintu, nervously hovering by the menu. He is fine. He says he is fine.
     const pintu = new PintuView(this, 1040, 580);
     pintu.applyLosses(store.state.pintuLoss);
-    this.events.on(Phaser.Scenes.Events.UPDATE, (_t: number, dt: number) =>
-      pintu.animate('idle', dt),
+    onThisVisit(this, Phaser.Scenes.Events.UPDATE, (_t: unknown, dt: unknown) =>
+      pintu.animate('idle', dt as number),
     );
     sfx('nokia_ish_jingle');
 
@@ -44,8 +45,8 @@ export class Title extends Phaser.Scene {
         { label: () => t.settings, onSelect: () => goTo(this, 'Settings') },
         {
           label: () => (store.state.caseFiles.length > 0 ? t.caseFiles : t.caseFilesEmpty),
-          // Case file menu arrives with the CID engine (M4).
-          enabled: () => false,
+          onSelect: () => goTo(this, 'CaseFiles'),
+          enabled: () => store.state.caseFiles.length > 0,
         },
         { label: () => t.contentNotice, onSelect: () => goTo(this, 'ContentNotice') },
       ],

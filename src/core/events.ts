@@ -16,6 +16,7 @@ export interface EventMap {
   /** A captioned sound played (or would have, if muted/unavailable). */
   'sfx:played': { name: SfxName };
   'death:recorded': { id: number; cause: string };
+  'gadbad:changed': { count: number };
 }
 
 export type EventName = keyof EventMap;

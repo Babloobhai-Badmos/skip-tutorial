@@ -5,14 +5,24 @@ import { getStore } from '../core/gameState';
 import { hasLost } from '../core/pintuLoss';
 import { createRng } from '../core/rng';
 import type { SceneKey } from '../core/sceneFlow';
+import { nextCaseNumber } from '../cid/caseFiles';
+import { buildInvestigation, factsFor, nearestObject } from '../cid/engine';
+import { runInvestigation } from '../cid/investigation';
 import { DEATH_SCENES } from '../deathScenes';
 import type { DeathContext } from '../deathScenes/types';
 import { SubtitleBar } from '../ui/subtitleBar';
 import { GameplayScene } from './GameplayScene';
 
-interface DeathData {
+export interface SceneObject {
+  label: string;
+  x: number;
+}
+
+export interface DeathData {
   from: SceneKey;
   entryId: number;
+  /** Inanimate objects in the level: the CID's suspects. */
+  objects?: SceneObject[];
 }
 
 export interface RespawnData {
@@ -26,12 +36,17 @@ let lastSceneId: string | undefined;
 
 /**
  * Overlay launched on top of a paused level. Plays the death's laugh phase,
- * (M4: the CID investigation), then the break phase if the HorrorDirector
+ * then the CID investigation, then the break phase if the HorrorDirector
  * allows it, then hands control back to the level.
  */
 export class Death extends GameplayScene {
   private from: SceneKey = 'Title';
   private entryId = 0;
+  private objects: SceneObject[] = [];
+  /** Which death scene is playing (read by browser tests). */
+  playedId = '';
+  /** Which CID module wrote the investigation (read by browser tests). */
+  playedMode = '';
   private runToken = 0;
 
   constructor() {
@@ -41,6 +56,7 @@ export class Death extends GameplayScene {
   init(d: DeathData): void {
     this.from = d.from;
     this.entryId = d.entryId;
+    this.objects = d.objects ?? [];
   }
 
   create(): void {
@@ -57,6 +73,7 @@ export class Death extends GameplayScene {
     const rng = createRng(state.seed).fork(`death:${death.id}`);
     const scene = pickDeathScene(DEATH_SCENES, state, death.cause, rng, lastSceneId);
     lastSceneId = scene.id;
+    this.playedId = scene.id;
     const subtitles = new SubtitleBar(this);
     const layer = this.add.container(0, 0);
 
@@ -78,7 +95,21 @@ export class Death extends GameplayScene {
     await scene.runLaugh(ctx);
     layer.removeAll(true);
     subtitles.clear();
-    // M4: the CID investigation scene plays here, between laugh and break.
+    // The CID investigates every death, BEFORE the break phase.
+    const inv = buildInvestigation(
+      {
+        death,
+        nearestObject: nearestObject(this.objects, death.x),
+        caseNumber: nextCaseNumber(store.state),
+        horrorLevel: ctx.level,
+        facts: factsFor(store.state, death),
+      },
+      rng.fork('cid'),
+    );
+    this.playedMode = inv.mode;
+    await runInvestigation(ctx, inv);
+    layer.removeAll(true);
+    subtitles.clear();
     if (shouldRunBreak(scene, ctx.level)) {
       await ctx.wait(500);
       await scene.runBreak(ctx);
