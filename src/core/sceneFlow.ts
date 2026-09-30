@@ -10,6 +10,7 @@ export const SCENE_KEYS = [
   'Settings',
   'Pause',
   'Loading',
+  'Death',
   'Placeholder',
   'TutorialScene',
   'Level1Hall',
@@ -24,6 +25,7 @@ export type SceneKey = (typeof SCENE_KEYS)[number];
 
 /** Scenes where the player is "in the game": pause is always available here. */
 export const GAMEPLAY_SCENES: ReadonlySet<SceneKey> = new Set<SceneKey>([
+  'Death',
   'Placeholder',
   'TutorialScene',
   'Level1Hall',
@@ -47,6 +49,8 @@ export const TRANSITIONS: Readonly<Record<SceneKey, readonly SceneKey[]>> = {
   Pause: [],
   // Loading is the tip screen between gameplay scenes; it starts its target directly.
   Loading: [],
+  // Death is an overlay on a paused level; it only ever quits to Title.
+  Death: ['Title'],
   Placeholder: ['TutorialScene', 'Title'],
   TutorialScene: ['Level1Hall', 'Title'],
   Level1Hall: ['Level2Kitchen', 'TutorialScene', 'Title'],
@@ -65,8 +69,10 @@ export const IMPLEMENTED_SCENES: ReadonlySet<SceneKey> = new Set<SceneKey>([
   'Settings',
   'Pause',
   'Loading',
+  'Death',
   'Placeholder',
   'TutorialScene',
+  'Level1Hall',
 ]);
 
 export function isSceneKey(value: unknown): value is SceneKey {

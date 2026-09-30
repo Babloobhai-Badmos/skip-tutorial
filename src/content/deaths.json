@@ -1,0 +1,65 @@
+{
+  "d01": {
+    "card": "KYA SE KYA\nHO GAYA",
+    "sub": "(aap. abhi.)",
+    "laughLine": "Aur yeh... chale gaye.",
+    "whisper": "Wapas mat aana.",
+    "continue": "Enter / click"
+  },
+  "d02": {
+    "card": "RASODE MEIN\nKAUN THA?",
+    "punch": "...aap the. Aur cooker tha. Cooker jeet gaya.",
+    "servesOne": "Serves 1."
+  },
+  "d07": {
+    "title": "Pintu (Guide)",
+    "status": "online",
+    "typing": "Pintu is typing",
+    "tips": {
+      "fall": [
+        "Bhai gaddha tha 😅",
+        "Maine bola tha? Nahi bola. Sorry 🙏",
+        "Next time kood jaana. Confidence se."
+      ],
+      "cooker": [
+        "Cooker ki siti pe mat jao bhai",
+        "Woh 3 baar bajta hai. Ya 4. Main gin raha hoon."
+      ],
+      "bangles": ["Choodiyan tooti padi thi 😬", "Mummy ko mat batana."],
+      "default": ["Kya hua bhai? 😅", "Koi baat nahi. Tutorial mein aa jao. Wahan safe hai."]
+    },
+    "reply": "👍",
+    "deathMessage": "☠ Aap mar gaye · x{x} · {time}",
+    "dismiss": "Enter / click: chat band karo"
+  },
+  "count": [
+    "ek",
+    "do",
+    "teen",
+    "chaar",
+    "paanch",
+    "chhe",
+    "saat",
+    "aath",
+    "nau",
+    "das",
+    "gyarah",
+    "barah",
+    "terah",
+    "chaudah",
+    "pandrah",
+    "solah",
+    "satrah",
+    "atharah",
+    "unnees",
+    "bees"
+  ],
+  "hall": {
+    "backDoor": "← TUTORIAL",
+    "nextDoor": "KITCHEN →",
+    "doorPrompt": "E / Enter: darwaza",
+    "cooker": "cooker",
+    "bangles": "choodiyan (tooti)",
+    "hint": "←/→ chalo   ↑/Space kudo   E darwaza   Esc pause"
+  }
+}

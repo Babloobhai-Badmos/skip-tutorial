@@ -118,6 +118,7 @@ export function normalizeState(raw: Raw, now: number): GameState {
     scene: str(e.scene, 'unknown'),
     cause: str(e.cause, 'unknown'),
     timestamp: num(e.timestamp, now, 0),
+    ...(e.breakPlayed === true ? { breakPlayed: true } : {}),
   }));
 
   const pintuLoss: PintuLossEntry[] = arr(raw.pintuLoss)

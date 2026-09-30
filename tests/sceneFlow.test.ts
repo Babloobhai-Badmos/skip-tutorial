@@ -33,10 +33,10 @@ describe('sceneFlow', () => {
   });
 
   it('routes unbuilt scenes to Placeholder but remembers the intent', () => {
-    expect(planTransition('TutorialScene', 'Level1Hall')).toEqual({
+    expect(planTransition('Level1Hall', 'Level2Kitchen')).toEqual({
       ok: true,
       target: 'Placeholder',
-      intended: 'Level1Hall',
+      intended: 'Level2Kitchen',
     });
     expect(planTransition('Title', 'TutorialScene')).toEqual({
       ok: true,

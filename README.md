@@ -21,7 +21,10 @@ npm run build      # typecheck + production build into dist/
 - `src/core/pintuLoss.ts` — what Pintu loses, in order; the tutorial room quietly gives voice lines back.
 - `src/tutorial` — Confident Walking timer, safe-room timer (pure logic).
 - `src/audio` — Web Audio engine, mixer (channels + category/voice mutes), synthesized sfx presets.
-- `src/scenes` — Phaser scenes. Gameplay scenes extend `GameplayScene` so pause is always available.
+- `src/core/horrorDirector.ts` — the tone brain (levels 0–5); the only writer of `horrorLevel`.
+- `src/core/deaths.ts` + `src/deathScenes` — death logging/routing and the `DeathScene` modules
+  (laugh phase always, break phase when the HorrorDirector allows it).
+- `src/scenes` — Phaser scenes. `Death` is an overlay on top of a paused level. Gameplay scenes extend `GameplayScene` so pause is always available.
 - `src/ui` — menu (keyboard + mouse), theme, effects.
 - `src/content/*.json` — every player-facing string.
 
@@ -35,13 +38,14 @@ Menus work with arrows + Enter or the mouse.
 - `?fast=1` (dev only) runs the tutorial timers at 20x: Confident Walking takes 9s, the
   tutorial-room reward 3s.
 - The console exposes `__game`, `__store`, `__sfx(name)` and `__audio()`.
+- To see break phases quickly: die 4+ times in the hall (the pit is right there).
 - Reset progress with `__store.reset()` (keeps safety settings) or `localStorage.clear()`.
 
 ## Milestones
 
 - [x] M1 — Skeleton: boot, content notice, title, settings, pause, GameState, event bus, scene flow.
 - [x] M2 — Tutorial comedy: Pintu dialogue + loss system, stations, certificate, tips, [SKIP], sfx
-- [ ] M3 — Death system + HorrorDirector
+- [x] M3 — Death system + HorrorDirector: D01, D02, D07 (laugh + break), hall prototype
 - [ ] M4 — CID engine
 - [ ] M5 — Levels
 - [ ] M6 — Act 3

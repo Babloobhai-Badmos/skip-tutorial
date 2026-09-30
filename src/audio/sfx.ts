@@ -45,46 +45,48 @@ export const SFX: Record<SfxName, SfxPreset> = {
     category: 'stings',
     jumpscare: true,
     captioned: true,
-    render(ctx, dest, t0) {
+    // pitch < 1 also slows it down: the same sting, overstaying (D01 break).
+    render(ctx, dest, t0, o) {
+      const p = o.pitch ?? 1;
       noise(ctx, dest, {
         t0,
-        attack: 0.35,
-        hold: 0.05,
-        release: 0.15,
+        attack: 0.35 / p,
+        hold: 0.05 / p,
+        release: 0.15 / p,
         peak: 0.5,
         filter: 'bandpass',
-        freq: 300,
-        freqEnd: 4000,
+        freq: 300 * p,
+        freqEnd: 4000 * p,
         q: 2,
       });
       [110, 147, 196].forEach((f, i) => {
-        const t = t0 + 0.55 + i * 0.26;
+        const t = t0 + (0.55 + i * 0.26) / p;
         tone(ctx, dest, {
           type: 'sawtooth',
-          freq: f,
+          freq: f * p,
           t0: t,
-          hold: 0.08,
-          release: 0.25,
+          hold: 0.08 / p,
+          release: 0.25 / p,
           peak: 0.45,
         });
         tone(ctx, dest, {
           type: 'square',
-          freq: f / 2,
+          freq: (f / 2) * p,
           t0: t,
-          hold: 0.06,
-          release: 0.2,
+          hold: 0.06 / p,
+          release: 0.2 / p,
           peak: 0.3,
         });
         noise(ctx, dest, {
           t0: t,
           hold: 0.02,
-          release: 0.12,
+          release: 0.12 / p,
           peak: 0.4,
           filter: 'lowpass',
-          freq: 900,
+          freq: 900 * p,
         });
       });
-      return 1.4;
+      return 1.4 / p;
     },
   },
 

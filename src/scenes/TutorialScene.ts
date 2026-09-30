@@ -3,6 +3,7 @@ import ui from '../content/ui.json';
 import { PINTU_LINES, PintuActor } from '../characters/pintuActor';
 import { losableIds } from '../characters/pintu';
 import { PintuView } from '../characters/pintuView';
+import { PLAYER_SPEED, PlayerController } from '../characters/playerController';
 import { DEV_SPEED } from '../core/devFlags';
 import { getStore } from '../core/gameState';
 import { applyLoss, hasLost, recoverVoiceLine } from '../core/pintuLoss';
@@ -27,16 +28,12 @@ import {
 } from './tutorial/room';
 
 const t = ui.tutorial;
-const SPEED = 220;
-const JUMP = 520;
 const EXTRA_LOSABLE = losableIds(PINTU_LINES);
 
-type Keys = Record<
-  'left' | 'right' | 'up' | 'a' | 'd' | 'w' | 'space' | 'e' | 'enter' | 'k',
-  Phaser.Input.Keyboard.Key
->;
+type Keys = Record<'e' | 'enter' | 'k', Phaser.Input.Keyboard.Key>;
 
 export class TutorialScene extends GameplayScene {
+  private controller!: PlayerController;
   private player!: Phaser.Physics.Arcade.Sprite;
   private room!: Room;
   private pintu!: PintuActor;
@@ -77,8 +74,8 @@ export class TutorialScene extends GameplayScene {
       createRng(store.state.seed).fork(`pintu:${visit}`),
     );
 
-    this.player = this.physics.add.sprite(PLAYER_START_X, FLOOR_Y - 40, 'player');
-    this.player.setCollideWorldBounds(true);
+    this.controller = new PlayerController(this, PLAYER_START_X, FLOOR_Y - 40);
+    this.player = this.controller.sprite;
     this.physics.add.collider(this.player, this.room.solids);
 
     this.walk = new ConfidentWalk(store.state.tutorial.walkProgressMs, DEV_SPEED);
@@ -89,13 +86,6 @@ export class TutorialScene extends GameplayScene {
     if (!kb) throw new Error('keyboard required');
     const K = Phaser.Input.Keyboard.KeyCodes;
     this.keys = kb.addKeys({
-      left: K.LEFT,
-      right: K.RIGHT,
-      up: K.UP,
-      a: K.A,
-      d: K.D,
-      w: K.W,
-      space: K.SPACE,
       e: K.E,
       enter: K.ENTER,
       k: K.K,
@@ -147,30 +137,19 @@ export class TutorialScene extends GameplayScene {
   // ---------------------------------------------------------------- movement
 
   private movePlayer(dt: number): void {
-    const k = this.keys;
-    const body = this.player.body as Phaser.Physics.Arcade.Body;
-    const left = k.left.isDown || k.a.isDown;
-    const right = k.right.isDown || k.d.isDown;
-    const grounded = body.blocked.down || body.touching.down;
+    const body = this.controller.body;
+    const wasGrounded = body.blocked.down || body.touching.down;
     const onTreadmill =
-      grounded &&
+      wasGrounded &&
       body.bottom <= TREADMILL.top + 2 &&
       this.player.x > TREADMILL.x &&
       this.player.x < TREADMILL.x + TREADMILL.width;
+    // The belt runs exactly as fast as you walk: walking right = standing still.
+    const f = this.controller.update(onTreadmill ? -PLAYER_SPEED : 0);
+    const { left, right, grounded } = f;
 
-    const input = (right ? 1 : 0) - (left ? 1 : 0);
-    this.player.setVelocityX(input * SPEED + (onTreadmill ? -SPEED : 0));
-    if (input !== 0) this.player.setFlipX(input < 0);
-
-    if (Phaser.Input.Keyboard.JustDown(k.left) || Phaser.Input.Keyboard.JustDown(k.a)) {
-      this.completeStation('lookLeft', 'look_left');
-    }
-    const jumpPressed =
-      Phaser.Input.Keyboard.JustDown(k.up) ||
-      Phaser.Input.Keyboard.JustDown(k.w) ||
-      Phaser.Input.Keyboard.JustDown(k.space);
-    if (jumpPressed && grounded) {
-      this.player.setVelocityY(-JUMP);
+    if (f.lookedLeft) this.completeStation('lookLeft', 'look_left');
+    if (f.jumped) {
       if (
         !this.completeStation('jump', 'jump') &&
         this.cooldowns.jump <= 0 &&
@@ -180,6 +159,7 @@ export class TutorialScene extends GameplayScene {
         this.cooldowns.jump = 6000;
       }
     }
+    const k = this.keys;
     if (Phaser.Input.Keyboard.JustDown(k.k)) this.skip();
 
     for (const ev of this.walk.update(dt, { onTreadmill, walking: right && !left, grounded })) {

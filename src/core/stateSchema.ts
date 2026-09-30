@@ -20,6 +20,8 @@ export interface DeathLogEntry {
   scene: string;
   cause: string;
   timestamp: number;
+  /** The break phase played for this death (its body stays in the level). */
+  breakPlayed?: boolean;
 }
 
 export const PINTU_LOSS_ITEMS = ['nameTag', 'leftLeg', 'rightLeg', 'uiPanel', 'voiceLine'] as const;

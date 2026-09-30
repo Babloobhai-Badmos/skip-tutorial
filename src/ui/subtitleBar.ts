@@ -57,6 +57,8 @@ export class SubtitleBar {
       .setScrollFactor(0);
 
     const onSfx = ({ name }: { name: string }) => {
+      // A paused scene under an overlay must not caption the overlay's sounds.
+      if (!scene.sys.isActive()) return;
       const caption = CAPTIONS[name];
       if (caption) this.caption(caption);
     };

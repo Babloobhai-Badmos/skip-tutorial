@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import ui from '../content/ui.json';
 import { events } from '../core/events';
-import { canTransition, type SceneKey } from '../core/sceneFlow';
+import { canTransition, GAMEPLAY_SCENES, type SceneKey } from '../core/sceneFlow';
 import { Menu } from '../ui/menu';
 import { COLORS, GAME_HEIGHT, GAME_WIDTH, TEXT } from '../ui/theme';
 
@@ -70,7 +70,13 @@ export class Pause extends Phaser.Scene {
     if (!canTransition(this.from, 'Title')) {
       console.error(`Quit from ${this.from} is not in the transition table`);
     }
-    this.scene.stop(this.from);
+    // Stop every gameplay scene, not just the one that opened the menu:
+    // a Death overlay sits on top of a paused level.
+    for (const key of GAMEPLAY_SCENES) {
+      if (this.scene.isActive(key) || this.scene.isPaused(key) || this.scene.isSleeping(key)) {
+        this.scene.stop(key);
+      }
+    }
     events.emit('pause:closed');
     this.scene.start('Title');
     events.emit('scene:enter', { key: 'Title' });
