@@ -18,6 +18,9 @@ export const SFX_NAMES = [
   'xp_error_chime',
   'pintu_blip',
   'player_voice',
+  'dhol',
+  'shehnai',
+  'scream',
 ] as const;
 export type SfxName = (typeof SFX_NAMES)[number];
 

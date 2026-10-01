@@ -136,4 +136,38 @@ export const VOICES_PRESETS = {
       return 0.12;
     },
   },
+
+  // D06: what's under one muted laugh. A long, rising, strained voice - no
+  // words, nothing graphic. Capped by reduceJumpscares like any sting.
+  scream: {
+    channel: 'sitcom_audience',
+    category: 'audience',
+    jumpscare: true,
+    captioned: true,
+    render(ctx, dest, t0, o) {
+      const p = o.pitch ?? 1;
+      tone(ctx, dest, {
+        type: 'sawtooth',
+        freq: 380 * p,
+        freqEnd: 720 * p,
+        t0,
+        attack: 0.4,
+        hold: 1.2,
+        release: 0.6,
+        peak: 0.12,
+      });
+      noise(ctx, dest, {
+        t0,
+        attack: 0.4,
+        hold: 1.2,
+        release: 0.6,
+        peak: 0.35,
+        filter: 'bandpass',
+        freq: 1100 * p,
+        freqEnd: 1800 * p,
+        q: 5,
+      });
+      return 2.3;
+    },
+  },
 } satisfies Record<string, SfxPreset>;

@@ -26,6 +26,8 @@ npm run build      # typecheck + production build into dist/
   (laugh phase always, break phase when the HorrorDirector allows it).
 - `src/cid` — the Chodu CID engine: `logicModule` (comedy) / `truthModule` (horror, level 3+)
   write investigations in the same format; `investigation.ts` stages them; case files; Gadbad counter.
+- `src/levels` + `src/scenes/LevelScene.ts` — shared level logic: checkpoints that cost marks
+  (twist #1), deaths/respawns, bodies, HUDs, the lifeline.
 - `src/scenes` — Phaser scenes. `Death` is an overlay on top of a paused level: laugh → CID
   investigation → break. Gameplay scenes extend `GameplayScene` so pause is always available.
 - `src/ui` — menu (keyboard + mouse), theme, effects.
@@ -33,7 +35,8 @@ npm run build      # typecheck + production build into dist/
 
 ## Controls
 
-←/→ or A/D walk · ↑/W/Space jump · E/Enter open door · F call Daya at a locked door ·
+←/→ or A/D walk · ↑/W/Space jump · E/Enter open door / answer phone · F call Daya at a locked door ·
+L Phone a Friend (lifeline) ·
 K skip (tutorial) · Esc/P pause. During an investigation, Enter advances.
 Menus work with arrows + Enter or the mouse.
 
@@ -43,6 +46,9 @@ Menus work with arrows + Enter or the mouse.
   tutorial-room reward 3s.
 - The console exposes `__game`, `__store`, `__sfx(name)` and `__audio()`.
 - To see break phases quickly: die 4+ times in the hall (the pit is right there).
+- `?death=d06` (dev only) forces which death scene plays, e.g. `?death=d12`.
+- Levels: Hall (landline opens the kitchen for 15s) → Kitchen (cookers whistle on a beat;
+  the weight wobbles one beat before) → Wedding (aunties add plates; jumping over them is rude).
 - Reset progress with `__store.reset()` (keeps safety settings) or `localStorage.clear()`.
 
 ## Milestones
@@ -51,7 +57,7 @@ Menus work with arrows + Enter or the mouse.
 - [x] M2 — Tutorial comedy: Pintu dialogue + loss system, stations, certificate, tips, [SKIP], sfx
 - [x] M3 — Death system + HorrorDirector: D01, D02, D07 (laugh + break), hall prototype
 - [x] M4 — CID engine: investigations (Logic/Truth), case files, Gadbad counter, Daya's kicks + tally, D08, D09, D10
-- [ ] M5 — Levels
+- [x] M5 — Levels: Hall (landline puzzle), Kitchen (whistle rhythm), Wedding Buffet; D03–D06, D11, D12; marks/checkpoints
 - [ ] M6 — Act 3
 - [ ] M7 — Endgame
 - [ ] M8 — Async death tips server

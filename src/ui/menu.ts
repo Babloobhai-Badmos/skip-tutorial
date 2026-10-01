@@ -17,6 +17,9 @@ export interface MenuOptions {
   spacing?: number;
   align?: 'left' | 'center';
   style?: Phaser.Types.GameObjects.Text.TextStyle;
+  /** Pin to the camera (for menus shown inside scrolling levels). */
+  fixed?: boolean;
+  depth?: number;
 }
 
 /**
@@ -27,6 +30,7 @@ export class Menu {
   private readonly texts: Phaser.GameObjects.Text[] = [];
   private readonly cursor: Phaser.GameObjects.Text;
   private focus = -1;
+  private disposed = false;
   private readonly offs: (() => void)[] = [];
 
   constructor(
@@ -50,6 +54,8 @@ export class Menu {
         t.on('pointerover', () => this.setFocus(i));
         t.on('pointerdown', () => this.activate(i));
       }
+      if (opts.fixed) t.setScrollFactor(0);
+      if (opts.depth !== undefined) t.setDepth(opts.depth);
       this.texts.push(t);
     });
 
@@ -57,6 +63,8 @@ export class Menu {
       .text(0, 0, '>', { ...(opts.style ?? TEXT.menu), color: COLORS.accent })
       .setOrigin(1, 0.5)
       .setVisible(false);
+    if (opts.fixed) this.cursor.setScrollFactor(0);
+    if (opts.depth !== undefined) this.cursor.setDepth(opts.depth);
 
     const kb = scene.input.keyboard;
     if (kb) {
@@ -77,6 +85,7 @@ export class Menu {
   }
 
   refresh(): void {
+    if (this.disposed) return;
     this.items.forEach((item, i) => {
       const t = this.texts[i];
       if (!t) return;
@@ -97,6 +106,14 @@ export class Menu {
 
   destroy(): void {
     this.offs.splice(0).forEach((off) => off());
+  }
+
+  /** Removes the menu's objects and listeners (for transient menus). */
+  dispose(): void {
+    this.disposed = true;
+    this.destroy();
+    this.texts.forEach((t) => t.destroy());
+    this.cursor.destroy();
   }
 
   private isSelectable(i: number): boolean {
@@ -128,7 +145,7 @@ export class Menu {
     this.focus = i;
     sfx('typing_tick');
     this.items[i]?.onSelect?.();
-    // The action may have stopped the scene; only refresh if we're still alive.
-    if (this.scene.sys.isActive()) this.refresh();
+    // The action may have stopped the scene or disposed this menu.
+    if (!this.disposed && this.scene.sys.isActive()) this.refresh();
   }
 }

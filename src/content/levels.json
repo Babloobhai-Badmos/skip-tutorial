@@ -1,0 +1,74 @@
+{
+  "hud": {
+    "marks": "MARKS: {p}%",
+    "lifelineHint": "L: Phone a Friend",
+    "checkpoint": "(diya jal gaya. Save ho gaya.)"
+  },
+  "marksLines": [
+    "Itne kam marks? Log kya kahenge?",
+    "{p} percent. Main mummy ko nahi bataunga. Woh khud dekh lengi.",
+    "Itne kam marks? Sharma-ji ka beta {p} pe kabhi nahi aaya. Upar ya neeche.",
+    "Log kya kahenge. Log kya kahenge. Log..."
+  ],
+  "lifeline": {
+    "title": "LIFELINES",
+    "phone": "Phone a Friend: Pintu",
+    "free": "FREE",
+    "fifty": "50:50",
+    "audience": "Audience Poll",
+    "used": "USED",
+    "cancel": "Rehne do",
+    "ringing": "[phone: tring... tring...]",
+    "calls": [
+      "Haan haan bolo! Kaun? Aap? Level mein? Main aata hoon! Nahi aa sakta. Sorry. Hint: right jao. Right matlab seedha. Seedha matlab right.",
+      "Phir se? Haan. Bolo. Right jao. Kood ke. Main yahin hoon. Main hamesha yahin hoon.",
+      "Haan. Right. Kood. Theek hai. Sab theek hai.",
+      "...right."
+    ],
+    "breath": "(ek geeli, chhoti si saans)",
+    "hangup": "[call ended]"
+  },
+  "hall": {
+    "phone": "LANDLINE",
+    "answer": "E: phone uthao",
+    "kitchenLocked": "(Kitchen band hai. Phone ka intezaar karo.)",
+    "orders": [
+      "ACP: Suspect kitchen ki taraf ja raha hai! Kitchen ka darwaza 15 second ke liye khula hai! Jaldi!",
+      "ACP: Daya! Suspect ko pakdo! Kitchen! Abhi! 15 second!",
+      "ACP: Kuch toh gadbad hai. Kitchen. 15 second. Jao."
+    ],
+    "timer": "DARWAZA KHULA: {s}s",
+    "hungUp": "(Pause kiya. Phone kat gaya.)",
+    "takht": "takht"
+  },
+  "kitchen": {
+    "hint": "←/→ chalo   ↑/Space kudo   L lifeline   Esc pause   (siti se pehle weight hilta hai)",
+    "back": "← HALL",
+    "next": "SHAADI →",
+    "radio": "(radio: purane gaane. Koi sun nahi raha.)",
+    "empty": "(Kitchen khaali hai. Kitchen hamesha khaali hai.)",
+    "tawa": "garam tawa",
+    "chai": "chai (abhi bhi garam)"
+  },
+  "wedding": {
+    "hint": "←/→ chalo   ↑/Space kudo (aunty ke upar = badtameezi)   L lifeline   Esc pause",
+    "back": "← KITCHEN",
+    "next": "STAGE →",
+    "sanskaar": "SANSKAAR",
+    "plates": "PLATES: {n}/{max}",
+    "offers": [
+      "Thoda aur lo beta!",
+      "Itna sa? Aur lo!",
+      "Bas ek gulab jamun!",
+      "Dubla ho gaya hai!",
+      "Shaadi mein bhi diet?"
+    ],
+    "rude": "(Aunty ne dekh liya. Sanskaar kam.)",
+    "washCounter": "PLATE WAPAS",
+    "returned": "(Plates wapas. Aunty ne yeh bhi dekha.)",
+    "aunty": "aunty",
+    "stage": "varmala stage",
+    "plate": "plate"
+  },
+  "placeholderNext": "Act 3 abhi bana nahi hai."
+}

@@ -14,6 +14,11 @@ import { chatScript } from '../src/deathScenes/d07_blueTicks';
 import { whistleSteps } from '../src/deathScenes/d02_rasode';
 import { DEATH_SCENES } from '../src/deathScenes';
 import { reportFields, timeDrift } from '../src/deathScenes/d10_postmortem';
+import { acceptControls } from '../src/deathScenes/d03_buffet';
+import { groupMembers } from '../src/deathScenes/d04_groupChat';
+import { audienceVoices } from '../src/deathScenes/d06_laughTrack';
+import { rightTheories } from '../src/deathScenes/d11_freddy';
+import { HANGUP_PAUSE_DELAY_MS } from '../src/deathScenes/d12_landline';
 
 const makeStore = () =>
   new GameStore({ storage: createMemoryStorage(), now: () => 1, events: new EventBus() });
@@ -55,7 +60,7 @@ describe('pickDeathScene', () => {
       seen.add(pickDeathScene(DEATH_SCENES, state(3), 'bangles', createRng(seed)).id);
     }
     expect(seen).toEqual(
-      new Set(['d01_kyaSeKya', 'd07_blueTicks', 'd09_gadbad', 'd10_postmortem']),
+      new Set(['d01_kyaSeKya', 'd06_laughTrack', 'd07_blueTicks', 'd09_gadbad', 'd10_postmortem']),
     );
   });
 
@@ -79,6 +84,25 @@ describe('pickDeathScene', () => {
     expect(ids(2)).toEqual(new Set(['d01_kyaSeKya', 'd07_blueTicks', 'd10_postmortem']));
   });
 
+  it('more general deaths unlock as you keep dying', () => {
+    const ids = new Set(
+      Array.from(
+        { length: 80 },
+        (_, seed) => pickDeathScene(DEATH_SCENES, state(6), 'bangles', createRng(seed)).id,
+      ),
+    );
+    for (const id of ['d04_groupChat', 'd05_phoneAFriend', 'd06_laughTrack', 'd11_freddy']) {
+      expect(ids.has(id), id).toBe(true);
+    }
+  });
+
+  it('level-specific causes', () => {
+    const at = (cause: string) => pickDeathScene(DEATH_SCENES, state(1), cause, createRng(1)).id;
+    expect(at('buffet')).toBe('d03_buffet');
+    expect(at('sanskaar')).toBe('d03_buffet');
+    expect(at('landline')).toBe('d12_landline');
+  });
+
   it('door deaths belong to Daya', () => {
     expect(pickDeathScene(DEATH_SCENES, state(1), 'door', createRng(1)).id).toBe('d08_darwazaTodo');
   });
@@ -91,16 +115,32 @@ describe('pickDeathScene', () => {
 
 describe('break gating', () => {
   it('breaks need the horror level', () => {
-    const [d01, d02, d07] = DEATH_SCENES as [
-      (typeof DEATH_SCENES)[0],
-      (typeof DEATH_SCENES)[0],
-      (typeof DEATH_SCENES)[0],
-    ];
-    expect(shouldRunBreak(d01, 0)).toBe(false);
-    expect(shouldRunBreak(d01, 1)).toBe(true);
-    expect(shouldRunBreak(d07, 1)).toBe(true);
-    expect(shouldRunBreak(d02, 1)).toBe(false);
-    expect(shouldRunBreak(d02, 2)).toBe(true);
+    const byId = (id: string) => DEATH_SCENES.find((d) => d.id === id)!;
+    expect(shouldRunBreak(byId('d01_kyaSeKya'), 0)).toBe(false);
+    expect(shouldRunBreak(byId('d01_kyaSeKya'), 1)).toBe(true);
+    expect(shouldRunBreak(byId('d07_blueTicks'), 1)).toBe(true);
+    expect(shouldRunBreak(byId('d02_rasode'), 1)).toBe(false);
+    expect(shouldRunBreak(byId('d02_rasode'), 2)).toBe(true);
+    // Freddy's theories only start being right later.
+    expect(shouldRunBreak(byId('d11_freddy'), 2)).toBe(false);
+    expect(shouldRunBreak(byId('d11_freddy'), 3)).toBe(true);
+  });
+
+  it('all twelve deaths from the catalog are registered', () => {
+    expect(DEATH_SCENES.map((d) => d.id.slice(0, 3)).sort()).toEqual([
+      'd01',
+      'd02',
+      'd03',
+      'd04',
+      'd05',
+      'd06',
+      'd07',
+      'd08',
+      'd09',
+      'd10',
+      'd11',
+      'd12',
+    ]);
   });
 
   it('every scene has a valid level and unique id', () => {
@@ -171,5 +211,72 @@ describe('D10 postmortem', () => {
   it('time of death drifts from past to future', () => {
     expect(timeDrift()).toEqual(['kal hui', 'aaj hui', 'abhi hui', 'abhi hogi']);
     expect(timeDrift()[0]).toBe(Object.fromEntries(reportFields(death))['Maut ka samay']);
+  });
+});
+
+describe('M5 deaths', () => {
+  it('D03: every control says Accept', () => {
+    const c = acceptControls();
+    expect(c.length).toBeGreaterThanOrEqual(5);
+    expect(new Set(c.map((k) => k.label))).toEqual(new Set(['Accept']));
+    // Pause is never relabelled.
+    expect(c.some((k) => k.key === 'Esc')).toBe(false);
+  });
+
+  it('D04: the group is everyone before you, then you', () => {
+    const m = groupMembers(createRng(3), 'Aap');
+    expect(m.at(-1)).toBe('Aap');
+    expect(m.length).toBe(7);
+    expect(groupMembers(createRng(3), 'Aap')).toEqual(m);
+  });
+
+  it('D06: the audience is your earlier deaths, not this one', () => {
+    const log = [1, 2, 3, 4].map((id) => ({
+      id,
+      x: id * 100,
+      y: 0,
+      scene: 'L',
+      cause: 'fall',
+      timestamp: 0,
+    }));
+    const v = audienceVoices(log);
+    expect(v.map((x) => x.index)).toEqual([0, 1, 2]);
+    expect(v[0]?.label).toContain('#1');
+    expect(v.some((x) => x.label.includes('#4'))).toBe(false);
+    expect(audienceVoices(log.slice(0, 1))).toEqual([]);
+  });
+
+  it('D11: Freddy is finally right', () => {
+    const t = rightTheories({
+      x: 712,
+      spotDeaths: 3,
+      deathCount: 9,
+      calledPintu: 2,
+      skips: 1,
+      doorsKicked: 4,
+      minutes: 5,
+    });
+    expect(t.join(' ')).toContain('9 baar');
+    expect(t.join(' ')).toContain('x712');
+    expect(t.join(' ')).not.toMatch(/\{\w+\}/);
+  });
+
+  it('D11: never pins a zero', () => {
+    const t = rightTheories({
+      x: 5,
+      spotDeaths: 1,
+      deathCount: 3,
+      calledPintu: 0,
+      skips: 0,
+      doorsKicked: 0,
+      minutes: 1,
+    });
+    expect(t.join(' ')).not.toMatch(/\b0 (baar|darwaze)/);
+    expect(t).toHaveLength(4);
+  });
+
+  it('D12: pausing hangs up but only delays the menu', () => {
+    expect(HANGUP_PAUSE_DELAY_MS).toBeGreaterThan(0);
+    expect(HANGUP_PAUSE_DELAY_MS).toBeLessThanOrEqual(2000);
   });
 });

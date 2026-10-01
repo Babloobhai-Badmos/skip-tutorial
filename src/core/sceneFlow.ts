@@ -56,8 +56,8 @@ export const TRANSITIONS: Readonly<Record<SceneKey, readonly SceneKey[]>> = {
   Placeholder: ['TutorialScene', 'Title'],
   TutorialScene: ['Level1Hall', 'Title'],
   Level1Hall: ['Level2Kitchen', 'TutorialScene', 'Title'],
-  Level2Kitchen: ['Level3Wedding', 'TutorialScene', 'Title'],
-  Level3Wedding: ['Act3Hallway', 'TutorialScene', 'Title'],
+  Level2Kitchen: ['Level3Wedding', 'Level1Hall', 'TutorialScene', 'Title'],
+  Level3Wedding: ['Act3Hallway', 'Level2Kitchen', 'TutorialScene', 'Title'],
   Act3Hallway: ['CatAct', 'TutorialScene', 'Title'],
   CatAct: ['FinalReveal', 'Title'],
   FinalReveal: ['Title'],
@@ -76,6 +76,8 @@ export const IMPLEMENTED_SCENES: ReadonlySet<SceneKey> = new Set<SceneKey>([
   'Placeholder',
   'TutorialScene',
   'Level1Hall',
+  'Level2Kitchen',
+  'Level3Wedding',
 ]);
 
 export function isSceneKey(value: unknown): value is SceneKey {

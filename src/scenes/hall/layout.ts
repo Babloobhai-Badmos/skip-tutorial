@@ -10,7 +10,10 @@ export const FLOOR_Y = 640;
 export const PIT = { from: 700, to: 830 };
 export const COOKER = { x: 1150, w: 70, h: 60 };
 export const BANGLES = { from: 1550, to: 1690 };
-export const CHECKPOINT_X = 170;
+export const CHECKPOINTS = [170, 1250, 2080];
+export const PIT2 = { from: 1780, to: 1980 };
+export const TAKHT = { x: 1850, w: 60, y: FLOOR_Y - 34 };
+export const PHONE_X = 1000;
 export const BACK_DOOR_X = 70;
 export const NEXT_DOOR_X = 2320;
 
@@ -30,7 +33,8 @@ export const HALL_OBJECTS: readonly { key: keyof typeof cid.objects; x: number }
   { key: 'cooker', x: COOKER.x },
   { key: 'almirah', x: 1360 },
   { key: 'bangles', x: (BANGLES.from + BANGLES.to) / 2 },
-  { key: 'photo', x: 1900 },
+  { key: 'takht', x: TAKHT.x + TAKHT.w / 2 },
+  { key: 'phone', x: PHONE_X },
   { key: 'door', x: NEXT_DOOR_X },
 ];
 
@@ -48,8 +52,8 @@ export interface HallLayout {
   cooker: Phaser.GameObjects.Container;
   backDoor: Phaser.GameObjects.Zone;
   nextDoor: Phaser.GameObjects.Zone;
-  doorPrompt: Phaser.GameObjects.Text;
   lockedDoors: LockedDoor[];
+  phone: Phaser.GameObjects.Container;
 }
 
 /** The Hall prototype: a corridor with a pit, a pressure cooker and broken bangles. */
@@ -72,7 +76,21 @@ export function buildHall(scene: Phaser.Scene): HallLayout {
       scene.add.rectangle(from, FLOOR_Y, to - from, GAME_HEIGHT - FLOOR_Y, 0x4a4238).setOrigin(0),
     );
   floor(0, PIT.from);
-  floor(PIT.to, HALL_WIDTH);
+  floor(PIT.to, PIT2.from);
+  floor(PIT2.to, HALL_WIDTH);
+  scene.add.rectangle(PIT2.from, FLOOR_Y, PIT2.to - PIT2.from, 200, 0x050505).setOrigin(0);
+  // A takht floating over the second pit. Nobody asks why.
+  solids.add(scene.add.rectangle(TAKHT.x, TAKHT.y, TAKHT.w, 16, 0x7a5230).setOrigin(0));
+  scene.add.rectangle(TAKHT.x + 4, TAKHT.y + 16, 6, 18, 0x5b3d24).setOrigin(0);
+  scene.add.rectangle(TAKHT.x + TAKHT.w - 10, TAKHT.y + 16, 6, 18, 0x5b3d24).setOrigin(0);
+  // The landline, on its little table with a lace cover.
+  scene.add.rectangle(PHONE_X - 30, FLOOR_Y - 50, 60, 50, 0x6b4f2a).setOrigin(0);
+  scene.add.rectangle(PHONE_X - 34, FLOOR_Y - 54, 68, 8, 0xf2ead8).setOrigin(0);
+  const phone = scene.add.container(PHONE_X, FLOOR_Y - 66, [
+    scene.add.rectangle(0, 0, 40, 18, 0x1c1c1c),
+    scene.add.rectangle(0, -12, 46, 8, 0x111111),
+    scene.add.circle(0, 1, 5, 0x444444),
+  ]);
   // The pit: just dark. Nobody put a railing.
   scene.add.rectangle(PIT.from, FLOOR_Y, PIT.to - PIT.from, 200, 0x050505).setOrigin(0);
 
@@ -116,10 +134,6 @@ export function buildHall(scene: Phaser.Scene): HallLayout {
   };
   const backDoor = door(BACK_DOOR_X, h.backDoor);
   const nextDoor = door(NEXT_DOOR_X, h.nextDoor);
-  const doorPrompt = scene.add
-    .text(0, FLOOR_Y - 210, h.doorPrompt, { ...TEXT.small, color: COLORS.accent })
-    .setOrigin(0.5)
-    .setVisible(false);
 
   const lockedDoors: LockedDoor[] = LOCKED_DOORS.map((d) => {
     const label = d.key === 'storeRoom' ? h.storeRoom : h.almirah;
@@ -135,5 +149,5 @@ export function buildHall(scene: Phaser.Scene): HallLayout {
     return { key: d.key, x: d.x, deadly: d.deadly, panel, zone, open: false };
   });
 
-  return { solids, cooker, backDoor, nextDoor, doorPrompt, lockedDoors };
+  return { solids, cooker, backDoor, nextDoor, lockedDoors, phone };
 }

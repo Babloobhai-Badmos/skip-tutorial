@@ -19,6 +19,8 @@ export class PlayerController {
   readonly sprite: Phaser.Physics.Arcade.Sprite;
   private readonly keys: Record<KeyName, Phaser.Input.Keyboard.Key>;
   enabled = true;
+  /** Multiplies walking speed (wedding plates slow you down). */
+  speedScale = 1;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     this.sprite = scene.physics.add.sprite(x, y, 'player');
@@ -56,7 +58,7 @@ export class PlayerController {
     const left = k.left.isDown || k.a.isDown;
     const right = k.right.isDown || k.d.isDown;
     const input = (right ? 1 : 0) - (left ? 1 : 0);
-    this.sprite.setVelocityX(input * PLAYER_SPEED + extraVx);
+    this.sprite.setVelocityX(input * PLAYER_SPEED * this.speedScale + extraVx);
     if (input !== 0) this.sprite.setFlipX(input < 0);
     const jumped = jumpPressed && grounded;
     if (jumped) this.sprite.setVelocityY(-PLAYER_JUMP);

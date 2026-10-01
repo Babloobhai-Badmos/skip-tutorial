@@ -91,6 +91,16 @@
     "door": "darwaza",
     "storeRoom": "store room ka darwaza",
     "almirah": "almirah",
-    "floor": "farsh"
+    "floor": "farsh",
+    "takht": "takht",
+    "phone": "landline",
+    "tawa": "garam tawa",
+    "chai": "chai",
+    "radio": "radio",
+    "counter": "kitchen counter",
+    "aunty": "aunty ki plate",
+    "stage": "varmala stage",
+    "washCounter": "plate wapas counter",
+    "dhol": "dhol"
   }
 }

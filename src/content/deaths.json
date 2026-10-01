@@ -101,5 +101,95 @@
     "drift": ["kal hui", "aaj hui", "abhi hui", "abhi hogi"],
     "unsolved": "Case unsolved. Suspect is watching.",
     "signed": "— Dr. Salunkhe"
+  },
+  "d03": {
+    "card": "SHAADI BUFFET",
+    "offers": [
+      "Thoda aur lo beta!",
+      "Bas ek aur!",
+      "Itna sa?",
+      "Gulab jamun toh lo!",
+      "Mausi ka dil rakh lo!"
+    ],
+    "sanskaarLabels": [
+      "Sanskaari",
+      "Thoda Sanskaari",
+      "Kam Sanskaari",
+      "Sanskaar: Loading...",
+      "Sanskaar: 0"
+    ],
+    "punch": "Maut ka kaaran: pyaar. Teen plate pyaar.",
+    "accept": "Accept",
+    "acceptHint": "Koi bhi button: Accept",
+    "smile": "(Sab aunties muskura rahi hain. Koi palak nahi jhapka raha.)"
+  },
+  "d04": {
+    "group": "Sharma Parivar 🙏",
+    "members": "{n} members",
+    "laugh": [
+      ["Bua ji", "Beta gir gaye? 😢 Khaana khaya tha?"],
+      ["Fufaji", "Hamare zamane mein log seedha chalte the."],
+      ["Mausi (Nagpur)", "🙏🙏🙏 Get well soon beta 🌹"],
+      ["Chachi", "Is message ko 10 logon ko bhejo warna aap bhi gir jaoge 🙏"]
+    ],
+    "membersTitle": "Group members",
+    "placeholders": [
+      "Rohit_07",
+      "guest_2291",
+      "Priya_k",
+      "Sonu_bhai",
+      "anon_314",
+      "Neha99",
+      "bunty_x",
+      "guest_0001"
+    ],
+    "joined": "{you} joined using this group's invite link",
+    "you": "Aap"
+  },
+  "d05": {
+    "question": "Kya aap Phone a Friend use karna chahenge?",
+    "yes": "Haan (FREE)",
+    "no": "Nahi"
+  },
+  "d06": {
+    "sign": "APPLAUSE",
+    "mixerTitle": "AUDIENCE MIXER",
+    "voice": "Audience #{n}  ·  x{x}  ·  {cause}",
+    "muted": "MUTED",
+    "live": "LIVE",
+    "hint": "↑/↓ chuno · Enter: mute · [ OK ] se band karo",
+    "scream": "[under the laughter: someone screaming]",
+    "nobody": "(audience mein koi aur nahi hai)"
+  },
+  "d11": {
+    "title": "FREDDY KA CASE BOARD",
+    "wrong": ["Billi ne kiya", "Cooker ki saazish", "Wi-Fi ki waves", "Padosi ka bhoot"],
+    "right": [
+      "Aap {deathCount} baar mare",
+      "x{x} pe. Phir se.",
+      "Pintu ko {calledPintu} baar bulaya",
+      "{doorsKicked} darwaze"
+    ],
+    "freddyLaugh": "Sir, sab connected hai. Billi, cooker, Wi-Fi. Main bata raha tha.",
+    "freddyBreak": "Sir... maine galat socha tha. Sab sahi tha.",
+    "screenshot": "SABOOT #1",
+    "rightFallback": [
+      "Aap abhi bhi khel rahe ho",
+      "Billi ne nahi kiya. Kabhi nahi kiya.",
+      "Wi-Fi bilkul theek hai"
+    ]
+  },
+  "d12": {
+    "ring": "[landline: trring trring]",
+    "ordersLaugh": [
+      "ACP: Daya! Gaadi nikalo!",
+      "ACP: Suspect gir gaya hai! Use uthao! Mat uthao! Pehle photo lo!",
+      "ACP: Aur haan. Kuch toh gadbad hai."
+    ],
+    "notForYou": "(Call aapke liye nahi hai.)",
+    "acpToPintu": "ACP: Pintu. Suspect ko pakad liya hai.",
+    "pintuReply": "Pintu: ...haan sir. Woh yahin hai.",
+    "hangup": "[call kat gaya]",
+    "pauseNote": "(Pause dabaya. Phone kat gaya. Menu aa raha hai.)"
   }
 }

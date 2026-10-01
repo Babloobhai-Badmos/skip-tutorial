@@ -1,6 +1,7 @@
 import pintuContent from '../content/pintu.json';
 import { sfx } from '../audio/engine';
 import { markBreakPlayed, pickDeathScene, shouldRunBreak } from '../core/deaths';
+import { DEV_FORCE_DEATH } from '../core/devFlags';
 import { getStore } from '../core/gameState';
 import { hasLost } from '../core/pintuLoss';
 import { createRng } from '../core/rng';
@@ -48,6 +49,7 @@ export class Death extends GameplayScene {
   /** Which CID module wrote the investigation (read by browser tests). */
   playedMode = '';
   private runToken = 0;
+  private pauseInterceptor: (() => number) | null = null;
 
   constructor() {
     super('Death');
@@ -59,7 +61,12 @@ export class Death extends GameplayScene {
     this.objects = d.objects ?? [];
   }
 
+  protected beforePause(): number {
+    return this.pauseInterceptor?.() ?? 0;
+  }
+
   create(): void {
+    this.pauseInterceptor = null;
     this.setupPause();
     void this.run(++this.runToken);
   }
@@ -71,7 +78,9 @@ export class Death extends GameplayScene {
     if (!death) return this.finish(token, false);
 
     const rng = createRng(state.seed).fork(`death:${death.id}`);
-    const scene = pickDeathScene(DEATH_SCENES, state, death.cause, rng, lastSceneId);
+    const force = DEV_FORCE_DEATH;
+    const forced = force ? DEATH_SCENES.find((d) => d.id.startsWith(force)) : undefined;
+    const scene = forced ?? pickDeathScene(DEATH_SCENES, state, death.cause, rng, lastSceneId);
     lastSceneId = scene.id;
     this.playedId = scene.id;
     const subtitles = new SubtitleBar(this);
@@ -90,9 +99,14 @@ export class Death extends GameplayScene {
       outcome: { respawnAtDeathSpot: false },
       wait: (ms) => new Promise((resolve) => this.time.delayedCall(ms, () => resolve())),
       waitForInput: (minMs = 0, maxMs) => this.waitForInput(minMs, maxMs),
+      setPauseInterceptor: (fn) => (this.pauseInterceptor = fn),
     };
 
+    // The laugh track. It has been there from the very first death.
+    laughTrack(ctx, state.deathLog.length);
+
     await scene.runLaugh(ctx);
+    this.pauseInterceptor = null;
     layer.removeAll(true);
     subtitles.clear();
     // The CID investigates every death, BEFORE the break phase.
@@ -113,6 +127,7 @@ export class Death extends GameplayScene {
     if (shouldRunBreak(scene, ctx.level)) {
       await ctx.wait(500);
       await scene.runBreak(ctx);
+      this.pauseInterceptor = null;
       markBreakPlayed(store, death.id);
     }
     this.finish(token, ctx.outcome.respawnAtDeathSpot);
@@ -152,3 +167,13 @@ export class Death extends GameplayScene {
 
 export const isRespawn = (data: unknown): data is RespawnData =>
   typeof data === 'object' && data !== null && (data as RespawnData).fromDeath === true;
+
+/** A few audience members laugh, staggered. Each one is a voice in the mixer. */
+function laughTrack(ctx: DeathContext, deaths: number): void {
+  const voices = Math.min(6, 2 + deaths);
+  for (let v = 0; v < voices; v++) {
+    ctx.scene.time.delayedCall(120 * v, () =>
+      ctx.sfx('sitcom_laugh', { voiceIndex: v, volume: 0.5 }),
+    );
+  }
+}

@@ -34,7 +34,9 @@ export const WEIGHTS = {
 
 /** Level N needs BOTH this score and this many deaths. Index = level. */
 export const SCORE_FOR_LEVEL = [0, 3.5, 6, 10, 15] as const;
-export const DEATHS_FOR_LEVEL = [0, 3, 5, 8, 12] as const;
+// Checkpoint loads also cost Pintu (M5), so losses pile up with deaths;
+// the death gates keep the first three deaths pure comedy regardless.
+export const DEATHS_FOR_LEVEL = [0, 4, 6, 9, 13] as const;
 
 export function horrorScore(i: DirectorInput): number {
   return (

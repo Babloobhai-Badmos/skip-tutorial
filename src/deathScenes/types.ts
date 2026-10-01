@@ -24,6 +24,11 @@ export interface DeathContext {
   pintuName: string;
   /** Set by a break phase to respawn at the death spot (D01). */
   outcome: { respawnAtDeathSpot: boolean };
+  /**
+   * D12 only: run `fn` when the player pauses; it returns a delay (ms) before
+   * the pause menu opens. The pause is postponed, never removed.
+   */
+  setPauseInterceptor(fn: (() => number) | null): void;
 }
 
 /** Spec section 3, plus two routing fields. */

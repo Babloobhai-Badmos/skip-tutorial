@@ -141,4 +141,67 @@ export const HOME_PRESETS = {
       return 0.8;
     },
   },
+
+  // Wedding band: a dhol hit (low thump + slap) ...
+  dhol: {
+    channel: 'music',
+    category: 'ambience',
+    captioned: false,
+    render(ctx, dest, t0, o) {
+      const p = o.pitch ?? 1;
+      tone(ctx, dest, {
+        freq: 110 * p,
+        freqEnd: 60 * p,
+        t0,
+        attack: 0.003,
+        hold: 0.02,
+        release: 0.18,
+        peak: 0.6,
+      });
+      noise(ctx, dest, {
+        t0,
+        attack: 0.002,
+        hold: 0.01,
+        release: 0.06,
+        peak: 0.25,
+        filter: 'bandpass',
+        freq: 1800,
+        q: 1.5,
+      });
+      return 0.25;
+    },
+  },
+  // ... and a reedy, nasal melody note (an original tune, played by music.ts).
+  shehnai: {
+    channel: 'music',
+    category: 'ambience',
+    captioned: false,
+    render(ctx, dest, t0, o) {
+      const f = 523 * (o.pitch ?? 1);
+      const bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.frequency.value = f * 2;
+      bp.Q.value = 2;
+      bp.connect(dest);
+      tone(ctx, bp, {
+        type: 'sawtooth',
+        freq: f,
+        t0,
+        attack: 0.03,
+        hold: 0.18,
+        release: 0.08,
+        peak: 0.5,
+      });
+      tone(ctx, bp, {
+        type: 'square',
+        freq: f * 1.005,
+        t0,
+        attack: 0.03,
+        hold: 0.18,
+        release: 0.08,
+        peak: 0.2,
+      });
+      return 0.3;
+    },
+  },
 } satisfies Record<string, SfxPreset>;

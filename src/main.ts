@@ -6,6 +6,8 @@ import { CaseFiles } from './scenes/CaseFiles';
 import { ContentNotice } from './scenes/ContentNotice';
 import { Death } from './scenes/Death';
 import { Level1Hall } from './scenes/Level1Hall';
+import { Level2Kitchen } from './scenes/Level2Kitchen';
+import { Level3Wedding } from './scenes/Level3Wedding';
 import { Loading } from './scenes/Loading';
 import { Pause } from './scenes/Pause';
 import { Placeholder } from './scenes/Placeholder';
@@ -30,6 +32,8 @@ const game = new Phaser.Game({
     Loading,
     TutorialScene,
     Level1Hall,
+    Level2Kitchen,
+    Level3Wedding,
     Placeholder,
     CaseFiles,
     Death,

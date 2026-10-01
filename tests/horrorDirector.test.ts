@@ -28,25 +28,39 @@ describe('HorrorDirector', () => {
     const table: [Partial<DirectorInput>, number][] = [
       [{}, 0],
       [{ deathCount: 1 }, 0],
-      [{ deathCount: 3 }, 0], // score 3 < 3.5
+      [{ deathCount: 3 }, 0],
       [{ deathCount: 4 }, 1],
       [{ deathCount: 5 }, 1],
       [{ deathCount: 6 }, 2],
-      [{ deathCount: 9 }, 2],
+      [{ deathCount: 9 }, 2], // score 9 < 10
       [{ deathCount: 10 }, 3],
+      [{ deathCount: 12 }, 3],
       [{ deathCount: 15 }, 4],
       [{ deathCount: 100 }, 4], // never reaches 5 by itself
+      // Each death also costs Pintu at a checkpoint: losses speed things up,
+      // but the first three deaths stay pure comedy.
+      [{ deathCount: 3, lossCount: 3 }, 0],
+      [{ deathCount: 4, lossCount: 4 }, 1],
+      [{ deathCount: 6, lossCount: 6 }, 2],
+      [{ deathCount: 9, lossCount: 9 }, 3],
+      [{ deathCount: 13, lossCount: 13 }, 4],
       // Skipper: losses + skips speed it up, but deaths still gate each level.
-      [{ deathCount: 3, lossCount: 4, skipCount: 4 }, 1],
-      [{ deathCount: 5, lossCount: 4, skipCount: 4 }, 2],
-      [{ deathCount: 8, lossCount: 8, skipCount: 8 }, 3],
-      // Complicity: "Aur dikhao" weighs the most.
-      [{ deathCount: 3, aurDikhaoClicks: 1 }, 1],
+      [{ deathCount: 4, lossCount: 4, skipCount: 4 }, 1],
+      [{ deathCount: 6, lossCount: 4, skipCount: 4 }, 2],
+      [{ deathCount: 9, lossCount: 8, skipCount: 8 }, 3],
       // Lots of play time alone doesn't scare anyone.
       [{ minutesPlayed: 1000 }, 0],
     ];
+
     for (const [input, expected] of table) {
       expect(lvl(input), JSON.stringify(input)).toBe(expected);
+    }
+  });
+
+  it('"Aur dikhao" weighs the most (complicity)', () => {
+    const one = (k: keyof DirectorInput) => horrorScore({ ...base, [k]: 1 });
+    for (const k of ['deathCount', 'lossCount', 'skipCount', 'calledPintuCount'] as const) {
+      expect(one('aurDikhaoClicks')).toBeGreaterThan(one(k));
     }
   });
 
@@ -57,7 +71,7 @@ describe('HorrorDirector', () => {
 
   it('never drops', () => {
     expect(lvl({ deathCount: 0, current: 3 })).toBe(3);
-    expect(lvl({ deathCount: 6, current: 4 })).toBe(4);
+    expect(lvl({ deathCount: 7, current: 4 })).toBe(4);
   });
 
   it('calm phase is the one exception; reveal is explicit', () => {

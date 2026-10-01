@@ -1,249 +1,221 @@
 import Phaser from 'phaser';
-import content from '../content/deaths.json';
-import { sfx } from '../audio/engine';
-import { PlayerController } from '../characters/playerController';
-import { corpsesIn, recordDeath, type DeathInput } from '../core/deaths';
-import { events } from '../core/events';
-import { getStore } from '../core/gameState';
-import { updateHorrorLevel } from '../core/horrorDirector';
 import cid from '../content/cid.json';
-import { createGadbadHud } from '../ui/gadbadHud';
-import { flashOrFade } from '../ui/effects';
-import { SubtitleBar } from '../ui/subtitleBar';
-import { GAME_HEIGHT, GAME_WIDTH, TEXT } from '../ui/theme';
-import { isRespawn } from './Death';
-import { GameplayScene } from './GameplayScene';
+import content from '../content/deaths.json';
+import levels from '../content/levels.json';
+import { sfx } from '../audio/engine';
+import type { PlayerFrame } from '../characters/playerController';
+import { getStore } from '../core/gameState';
+import { createRng } from '../core/rng';
+import { GAME_WIDTH } from '../ui/theme';
+import type { SceneObject } from './Death';
+import { kickDoor } from './hall/kick';
 import {
   BACK_DOOR_X,
   BANGLES,
   buildHall,
-  CHECKPOINT_X,
+  CHECKPOINTS,
   COOKER,
-  HALL_OBJECTS,
   FLOOR_Y,
+  HALL_OBJECTS,
   HALL_WIDTH,
   NEXT_DOOR_X,
+  PHONE_X,
   PIT,
+  PIT2,
   type HallLayout,
 } from './hall/layout';
-import { kickDoor } from './hall/kick';
-import { goTo } from './navigate';
-import { onThisVisit } from './sceneEvents';
+import { LevelScene, type BuiltLevel } from './LevelScene';
 
 const KEY = 'Level1Hall';
 /** Cooker cycle: quiet, then a whistle you must not be standing in. */
 const COOKER_PERIOD = 3600;
 const COOKER_WHISTLE = { from: 2400, to: 3500 };
+/** The landline rings for a while, then is quiet for a while. */
+const PHONE_CYCLE = 16_000;
+const PHONE_RING_MS = 7000;
+const CALL_MS = 15_000;
 
 /**
- * M3 Hall prototype (M5 turns it into the full level): somewhere to die.
- * Pit -> D01, cooker whistle -> D02, broken bangles -> general deaths.
+ * Level 1 - Hall: platforming, locked doors for Daya, a cooker, broken
+ * bangles, and the landline puzzle (the kitchen only opens during a call).
  */
-export class Level1Hall extends GameplayScene {
-  private player!: PlayerController;
+export class Level1Hall extends LevelScene {
+  protected readonly levelKey = KEY;
+  protected readonly levelWidth = HALL_WIDTH;
+  protected readonly checkpoints = CHECKPOINTS;
   private hall!: HallLayout;
-  private subtitles!: SubtitleBar;
-  private corpses!: Phaser.GameObjects.Group;
-  private dying = false;
-  private leaving = false;
-  private lastSafe = { x: CHECKPOINT_X, y: FLOOR_Y - 40 };
+  private kickKey!: Phaser.Input.Keyboard.Key;
   private cookerClock = 0;
   private whistling = false;
-  private doorKeys!: Phaser.Input.Keyboard.Key[];
-  private kickKey!: Phaser.Input.Keyboard.Key;
-  private kicking = false;
+  private phoneClock = 0;
+  private callLeftMs = 0;
+  private ringTimer = 0;
+  private timerText!: Phaser.GameObjects.Text;
 
   constructor() {
     super(KEY);
   }
 
-  create(): void {
-    this.dying = false;
-    this.leaving = false;
-    this.kicking = false;
+  protected hint(): string {
+    return content.hall.hint;
+  }
+
+  protected objects(): SceneObject[] {
+    return HALL_OBJECTS.map((o) => ({ label: cid.objects[o.key], x: o.x }));
+  }
+
+  protected buildLevel(): BuiltLevel {
+    this.hall = buildHall(this);
+    return {
+      solids: this.hall.solids,
+      exits: [
+        { zone: this.hall.backDoor, x: BACK_DOOR_X, to: 'TutorialScene' },
+        {
+          zone: this.hall.nextDoor,
+          x: NEXT_DOOR_X,
+          to: 'Level2Kitchen',
+          isOpen: () => this.callLeftMs > 0,
+          lockedText: levels.hall.kitchenLocked,
+        },
+      ],
+    };
+  }
+
+  protected onLevelCreate(): void {
     this.cookerClock = 0;
     this.whistling = false;
-    this.lastSafe = { x: CHECKPOINT_X, y: FLOOR_Y - 40 };
-
-    // A quit during Daya's slow-mo must not leave the next visit in slow motion.
-    this.tweens.timeScale = 1;
-    this.physics.world.timeScale = 1;
-    this.physics.world.setBounds(0, 0, HALL_WIDTH, GAME_HEIGHT + 300);
-    this.physics.world.setBoundsCollision(true, true, true, false);
-    this.hall = buildHall(this);
-    this.corpses = this.add.group();
-    this.drawCorpses();
-
-    this.player = new PlayerController(this, CHECKPOINT_X, FLOOR_Y - 40);
-    this.physics.add.collider(this.player.sprite, this.hall.solids);
-    this.cameras.main.setBounds(0, 0, HALL_WIDTH, GAME_HEIGHT);
-    this.cameras.main.startFollow(this.player.sprite, true, 0.12, 0.12);
-
-    this.subtitles = new SubtitleBar(this);
-    this.add
-      .text(GAME_WIDTH / 2, 20, content.hall.hint, TEXT.small)
-      .setOrigin(0.5, 0)
-      .setScrollFactor(0);
-
-    const K = Phaser.Input.Keyboard.KeyCodes;
-    this.doorKeys = [K.E, K.ENTER].map((k) => this.input.keyboard!.addKey(k));
-    this.kickKey = this.input.keyboard!.addKey(K.F);
-    createGadbadHud(this);
-
-    // Coming back from a Death overlay.
-    onThisVisit(this, Phaser.Scenes.Events.RESUME, (_sys: unknown, data: unknown) => {
-      if (isRespawn(data)) this.respawn(data.respawnAtDeathSpot);
-    });
-    this.setupPause();
+    this.phoneClock = 0;
+    this.callLeftMs = 0;
+    this.ringTimer = 0;
+    this.kickKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.F);
+    this.timerText = this.add
+      .text(GAME_WIDTH / 2, 70, '', { fontFamily: 'monospace', fontSize: '20px', color: '#ffcc33' })
+      .setOrigin(0.5)
+      .setScrollFactor(0)
+      .setDepth(800);
   }
 
-  update(_t: number, dtMs: number): void {
-    const dt = Math.min(dtMs, 100);
-    this.updateCooker(dt);
-    if (this.dying || this.leaving || this.kicking) return;
-
-    const frame = this.player.update();
-    const { x, y } = this.player.sprite;
-
-    if (y > GAME_HEIGHT + 40) return this.die({ x, y, scene: KEY, cause: 'fall' });
+  protected hazard(frame: PlayerFrame, x: number, y: number): string | null {
     const onFloor = frame.grounded && this.player.body.bottom >= FLOOR_Y - 2;
-    if (onFloor && x > BANGLES.from - 6 && x < BANGLES.to + 6) {
-      return this.die({ x, y, scene: KEY, cause: 'bangles' });
-    }
+    if (onFloor && x > BANGLES.from - 6 && x < BANGLES.to + 6) return 'bangles';
     if (this.whistling && Math.abs(x - COOKER.x) < 55 && y > FLOOR_Y - COOKER.h - 150) {
-      return this.die({ x, y, scene: KEY, cause: 'cooker' });
+      return 'cooker';
     }
-    const nearHazard =
+    return null;
+  }
+
+  protected nearHazard(x: number): boolean {
+    return (
       (x > PIT.from - 50 && x < PIT.to + 50) ||
+      (x > PIT2.from - 50 && x < PIT2.to + 50) ||
       (x > BANGLES.from - 60 && x < BANGLES.to + 60) ||
-      Math.abs(x - COOKER.x) < 90;
-    if (frame.grounded && !nearHazard) this.lastSafe = { x, y };
-
-    this.checkDoors();
-    this.checkLockedDoors();
-  }
-
-  private checkLockedDoors(): void {
-    const door = this.hall.lockedDoors.find(
-      (d) => !d.open && this.physics.overlap(this.player.sprite, d.zone),
+      Math.abs(x - COOKER.x) < 90
     );
-    if (door) this.hall.doorPrompt.setText(content.hall.lockedPrompt).setX(door.x).setVisible(true);
-    if (!door || !Phaser.Input.Keyboard.JustDown(this.kickKey)) return;
-    this.kicking = true;
-    this.player.enabled = false;
-    this.player.sprite.setVelocity(0, 0);
-    this.hall.doorPrompt.setVisible(false);
-    void kickDoor(this, door, this.subtitles, this.player.sprite.x).then((result) => {
-      this.kicking = false;
-      this.player.enabled = true;
-      if (result === 'deadly') {
-        const { x, y } = this.player.sprite;
-        this.die({ x, y, scene: KEY, cause: 'door' });
-      }
-    });
   }
+
+  /** Dying mid-call is a landline death (D12). */
+  protected deathCause(cause: string): string {
+    return this.callLeftMs > 0 ? 'landline' : cause;
+  }
+
+  /** "Pausing hangs up the call." In-level, the pause itself is never delayed. */
+  protected beforePause(): number {
+    if (this.callLeftMs > 0 && !this.dying) {
+      this.callLeftMs = 0;
+      this.timerText.setText('');
+      this.subtitles.say('', levels.hall.hungUp, { holdMs: 2000 });
+    }
+    return 0;
+  }
+
+  protected levelUpdate(dt: number): void {
+    this.updateCooker(dt);
+    if (this.dying || this.leaving) return;
+    this.updatePhone(dt);
+    if (!this.frozen) this.checkLockedDoors();
+  }
+
+  // ---------------------------------------------------------------- landline
+
+  private updatePhone(dt: number): void {
+    if (this.callLeftMs > 0) {
+      this.callLeftMs = Math.max(0, this.callLeftMs - dt);
+      const s = Math.ceil(this.callLeftMs / 1000);
+      this.timerText.setText(
+        this.callLeftMs > 0 ? levels.hall.timer.replace('{s}', String(s)) : '',
+      );
+      return;
+    }
+    this.phoneClock = (this.phoneClock + dt) % PHONE_CYCLE;
+    const ringing = this.phoneClock < PHONE_RING_MS;
+    if (!ringing) return;
+    this.ringTimer -= dt;
+    if (this.ringTimer <= 0) {
+      this.ringTimer = 1600;
+      sfx('landline_ring', { volume: 0.6 });
+      this.tweens.add({ targets: this.hall.phone, angle: 6, duration: 50, yoyo: true, repeat: 5 });
+    }
+    if (!this.frozen && Math.abs(this.player.sprite.x - PHONE_X) < 70) {
+      this.requestPrompt(levels.hall.answer, PHONE_X);
+      if (this.justPressedEnter()) this.answerPhone();
+    }
+  }
+
+  private answerPhone(): void {
+    this.phoneClock = PHONE_RING_MS; // stops the ringing
+    this.callLeftMs = CALL_MS;
+    const s = getStore().state;
+    const rng = createRng(s.seed).fork(`call:${s.deathCount}:${s.flags.leftRoomCount}`);
+    this.subtitles.say('', rng.pick(levels.hall.orders), { holdMs: 3000 });
+  }
+
+  // ---------------------------------------------------------------- cooker
 
   private updateCooker(dt: number): void {
     this.cookerClock = (this.cookerClock + dt) % COOKER_PERIOD;
     const now = this.cookerClock >= COOKER_WHISTLE.from && this.cookerClock < COOKER_WHISTLE.to;
     if (now && !this.whistling) {
       sfx('whistle', { volume: 0.5 });
-      this.tweens.add({
-        targets: this.hall.cooker,
-        y: this.hall.cooker.y - 8,
-        duration: 90,
-        yoyo: true,
-        repeat: 3,
-      });
-      this.puff();
+      const cooker = this.hall.cooker;
+      this.tweens.add({ targets: cooker, y: cooker.y - 8, duration: 90, yoyo: true, repeat: 3 });
+      for (let i = 0; i < 4; i++) {
+        const p = this.add.circle(
+          COOKER.x + (i - 1.5) * 8,
+          FLOOR_Y - COOKER.h - 70,
+          9,
+          0xffffff,
+          0.5,
+        );
+        this.tweens.add({
+          targets: p,
+          y: p.y - 110,
+          alpha: 0,
+          scale: 2.2,
+          duration: 1000 + i * 90,
+          onComplete: () => p.destroy(),
+        });
+      }
     }
     this.whistling = now;
   }
 
-  private puff(): void {
-    for (let i = 0; i < 4; i++) {
-      const p = this.add.circle(
-        COOKER.x + (i - 1.5) * 8,
-        FLOOR_Y - COOKER.h - 70,
-        9,
-        0xffffff,
-        0.5,
-      );
-      this.tweens.add({
-        targets: p,
-        y: p.y - 110,
-        alpha: 0,
-        scale: 2.2,
-        duration: 1000 + i * 90,
-        onComplete: () => p.destroy(),
-      });
-    }
-  }
+  // ---------------------------------------------------------------- Daya
 
-  private checkDoors(): void {
-    const atBack = this.physics.overlap(this.player.sprite, this.hall.backDoor);
-    const atNext = this.physics.overlap(this.player.sprite, this.hall.nextDoor);
-    const prompt = this.hall.doorPrompt;
-    prompt
-      .setText(content.hall.doorPrompt)
-      .setVisible(atBack || atNext)
-      .setX(atBack ? BACK_DOOR_X : NEXT_DOOR_X);
-    if (!(atBack || atNext) || !this.doorKeys.some((k) => Phaser.Input.Keyboard.JustDown(k)))
-      return;
-    this.leaving = true;
-    goTo(this, atBack ? 'TutorialScene' : 'Level2Kitchen');
-  }
-
-  // ---------------------------------------------------------------- death
-
-  private die(input: DeathInput): void {
-    if (this.dying) return;
-    this.dying = true;
-    const store = getStore();
-    const entry = recordDeath(store, input);
-    events.emit('death:recorded', { id: entry.id, cause: entry.cause });
-    updateHorrorLevel(store);
-    flashOrFade(this, 0xffffff, 180);
-    this.player.sprite.setVisible(false);
-    this.player.sprite.body!.enable = false;
-    this.time.delayedCall(380, () => {
-      // Order matters: scene ops are queued, and the level must already be
-      // paused when the Death overlay's create() runs.
-      this.scene.pause();
-      this.scene.launch('Death', {
-        from: KEY,
-        entryId: entry.id,
-        objects: HALL_OBJECTS.map((o) => ({ label: cid.objects[o.key], x: o.x })),
-      });
-      this.scene.bringToTop('Death');
-      this.scene.bringToTop('Pause');
+  private checkLockedDoors(): void {
+    const door = this.hall.lockedDoors.find(
+      (d) => !d.open && this.physics.overlap(this.player.sprite, d.zone),
+    );
+    if (door) this.requestPrompt(content.hall.lockedPrompt, door.x);
+    if (!door || !Phaser.Input.Keyboard.JustDown(this.kickKey)) return;
+    this.frozen = true;
+    this.player.sprite.setVelocity(0, 0);
+    this.prompt.setVisible(false);
+    void kickDoor(this, door, this.subtitles, this.player.sprite.x).then((result) => {
+      this.frozen = false;
+      if (result === 'deadly') {
+        const { x, y } = this.player.sprite;
+        this.die({ x, y, scene: KEY, cause: 'door' });
+      }
     });
-  }
-
-  private respawn(atDeathSpot: boolean): void {
-    const spot = atDeathSpot ? this.lastSafe : { x: CHECKPOINT_X, y: FLOOR_Y - 40 };
-    this.player.sprite.body!.enable = true;
-    this.player.placeAt(spot.x, spot.y);
-    this.player.sprite.setVisible(true);
-    this.drawCorpses();
-    this.dying = false;
-    // Twist #1 begins: someone quietly counts. No speaker. No explanation.
-    const state = getStore().state;
-    if (state.horrorLevel >= 1) {
-      const word = content.count[state.deathCount - 1] ?? String(state.deathCount);
-      this.time.delayedCall(900, () =>
-        this.subtitles.say('', `(...${word}.)`, { rate: 0.4, holdMs: 1600 }),
-      );
-    }
-  }
-
-  /** Bodies from deaths whose break phase played. They stay. */
-  private drawCorpses(): void {
-    this.corpses.clear(true, true);
-    for (const d of corpsesIn(getStore().state, KEY)) {
-      const y = Math.min(d.y, d.cause === 'fall' ? GAME_HEIGHT - 18 : FLOOR_Y - 14);
-      const body = this.add.image(d.x, y, 'player').setAngle(90).setTint(0x6d6d6d).setAlpha(0.85);
-      this.corpses.add(body);
-    }
   }
 }
